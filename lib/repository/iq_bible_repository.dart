@@ -42,8 +42,8 @@ final bibleRepository = Provider((ref) {
 });
 
 final chaptersProvider =
-    FutureProvider.family<Chapter, ChapterInfo>((ref, info) async {
-  final bibleProvider = ref.watch(bibleRepository);
+    FutureProvider.family.autoDispose<Chapter, ChapterInfo>((ref, info) async {
+  final bibleProvider = ref.read(bibleRepository);
   final chapter = await bibleProvider.getChapter(info.bookId + 1, info.chapterId);
   return chapter;
 });

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:se_bible_project/ui/reader_widget.dart';
+import 'package:se_bible_project/ui/reader_page_widget.dart';
 
 void main() {
   runApp(
@@ -40,6 +40,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return const BibleReader();
+    return const BibleReaderPageWidget();
   }
 }

@@ -27,17 +27,19 @@ class _BibleReaderPageState extends ConsumerState<BibleReaderPageWidget> {
   @override
   Widget build(BuildContext context) {
     final chapterState =
-        ref.read(chapterStateNotifierProvider(Testaments.allBooks));
-    final bookId = chapterState.currentBook;
-    final chapter = chapterState.currentChapter;
-
+        ref.watch(chapterStateNotifierProvider(Testaments.allBooks));
+    final chapterController = ref.read(chapterStateNotifierProvider(Testaments.allBooks).notifier);
     return Scaffold(
       appBar: AppBar(
         title: const BookButtonWidget(),
       ),
-      body: BibleReaderListWidget(
-        chapterId: chapter,
-        bookId: bookId,
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) async {
+          await chapterController.swipes(details);
+        },
+        child: BibleReaderListWidget(
+          chapterState: chapterState,
+        ),
       ),
     );
   }

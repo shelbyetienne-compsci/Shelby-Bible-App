@@ -1,24 +1,35 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:se_bible_project/env/env.dart';
 
 import '../models/book.dart';
 import '../models/chapter.dart';
 import '../models/verse.dart';
 
-
-const _apiKey = '248b04362bmsh8c422f05d65472dp1dd801jsn4cd7ff844c4a';
+const _apiKey = Env.key1;
 const _apiHost = 'iq-bible.p.rapidapi.com';
-const _url = 'https://iq-bible.p.rapidapi.com';
 
 class BibleApi {
+  /// get method. Provide query starting with slash.
+  /// ex. /GetBooks?language=english
+  Future<Response> _get(String query) {
+    log(query, name: 'RAPID-API CALL');
+    final response = http.get(
+      Uri.parse('https://iq-bible.p.rapidapi.com$query'),
+      headers: {
+        'X-RapidAPI-Key': _apiKey,
+        'X-RapidAPI-Host': _apiHost,
+      },
+    );
+    return response;
+  }
+
   Future<List<Book>> getBooks() async {
-    final url = Uri.parse('$_url/GetBooks?language=english');
-    final response = await http.get(url, headers: {
-      'X-RapidAPI-Key': _apiKey,
-      'X-RapidAPI-Host': _apiHost,
-    });
+    final response = await _get('/GetBooks?language=english');
     final json = jsonDecode(response.body);
     final books = <Book>[];
     for (final book in json) {
@@ -28,11 +39,7 @@ class BibleApi {
   }
 
   Future<List<Book>> getNTBooks() async {
-    final url = Uri.parse('$_url/GetBooksNT?language=english');
-    final response = await http.get(url, headers: {
-      'X-RapidAPI-Key': _apiKey,
-      'X-RapidAPI-Host': _apiHost,
-    });
+    final response = await _get('/GetBooksNT?language=english');
     final json = jsonDecode(response.body);
     final books = <Book>[];
     for (final book in json) {
@@ -42,11 +49,7 @@ class BibleApi {
   }
 
   Future<List<Book>> getOTBooks() async {
-    final url = Uri.parse('$_url/GetBooksOT?language=english');
-    final response = await http.get(url, headers: {
-      'X-RapidAPI-Key': _apiKey,
-      'X-RapidAPI-Host': _apiHost,
-    });
+    final response = await _get('/GetBooksOT?language=english');
     final json = jsonDecode(response.body);
     final books = <Book>[];
     for (final book in json) {
@@ -56,36 +59,24 @@ class BibleApi {
   }
 
   Future<Chapter> getChapter(int bookId, int chapterId) async {
-    final url = Uri.parse(
-        '$_url/GetChapter?bookId=$bookId&chapterId=$chapterId&versionId=kjv');
-    final response = await http.get(url, headers: {
-      'X-RapidAPI-Key': _apiKey,
-      'X-RapidAPI-Host': _apiHost,
-    });
+    final response = await _get(
+        '/GetChapter?bookId=$bookId&chapterId=$chapterId&versionId=kjv');
     final json = jsonDecode(response.body);
     final verses = <Verse>[];
     for (final verse in json) {
       verses.add(Verse.fromJson(verse));
     }
-    return Chapter(bookId: bookId, chapterId: chapterId, verses: verses);
+    return Chapter(currentBook: bookId, currentChapter: chapterId, verses: verses);
   }
 
   Future<int> getChapterCount(int bookId) async {
-    final url = Uri.parse('$_url/GetChapterCount?bookId=$bookId');
-    final response = await http.get(url, headers: {
-      'X-RapidAPI-Key': _apiKey,
-      'X-RapidAPI-Host': _apiHost,
-    });
+    final response = await _get('/GetChapterCount?bookId=$bookId');
     return jsonDecode(response.body)['chapterCount'];
   }
 
   Future<int> getVerseCount(int bookId, int chapterId) async {
-    final url =
-        Uri.parse('$_url/GetVerseCount?bookId=$bookId&chapterId=$chapterId');
-    final response = await http.get(url, headers: {
-      'X-RapidAPI-Key': _apiKey,
-      'X-RapidAPI-Host': _apiHost,
-    });
+    final response =
+        await _get('/GetVerseCount?bookId=$bookId&chapterId=$chapterId');
     return jsonDecode(response.body)['verseCount'];
   }
 }

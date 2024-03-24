@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart' hide State;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../helper.dart';
 import '../models/book.dart';
-import 'package:se_bible_project/repository/iq_bible_repository.dart';
+
+import '../repository/providers.dart';
 
 @immutable
 class ChapterState extends State {
   final int currentBook;
   final int currentChapter;
-  final List<int> chapters;
+  final int chapters;
   final List<Book> books;
 
   ChapterState({
@@ -21,7 +22,7 @@ class ChapterState extends State {
   ChapterState copyWith({
     int? currentBook,
     int? currentChapter,
-    List<int>? chapters,
+    int? chapters,
     List<Book>? books,
   }) =>
       ChapterState(
@@ -32,11 +33,11 @@ class ChapterState extends State {
       );
 }
 
-class ChapterStateNotifier extends Controller<ChapterState> {
+class ChapterStateController extends Controller<ChapterState> {
   final Ref ref;
   final Testaments testaments;
 
-  ChapterStateNotifier(this.ref, this.testaments, super.state);
+  ChapterStateController(this.ref, this.testaments, super.state);
 
   Future<void> setChapter(int chapter) async {
     if (!mounted) return;
@@ -46,46 +47,80 @@ class ChapterStateNotifier extends Controller<ChapterState> {
   Future<void> setBook(int book) async {
     if (!mounted) return;
     state = state.copyWith(
-        currentBook: book - 1,
-        currentChapter: 1,
-        chapters: await _fetchChapters(book));
+        currentBook: book - 1, chapters: await _fetchChapters(book));
   }
 
-  Future<List<int>> _fetchChapters(int bookId) async {
-    final bookChapters = ref.read(chapterCountProvider(bookId)).asData?.value;
-    return List.generate(bookChapters ?? 0, (index) => index + 1);
+  Future<int?> _fetchChapters(int bookId) async {
+    final bookChapters = ref.read(totalChaptersProvider(bookId)).asData?.value;
+    return bookChapters;
+  }
+
+  Future<void> swipes(DragEndDetails details) async {
+    if (details.velocity.pixelsPerSecond.dx > 0) {
+      // Right Swipe
+      if (state.currentBook == 0 && state.currentChapter == 1) {
+        return;
+      } else if (state.currentBook > 0 && state.currentChapter == 1) {
+        final bookChapters =
+            ref.read(totalChaptersProvider(state.currentBook)).asData?.value;
+        if (!mounted) return;
+        state = state.copyWith(
+          currentBook: state.currentBook - 1,
+          currentChapter: bookChapters,
+          chapters: await _fetchChapters(state.currentBook - 1),
+        );
+      } else {
+        state = state.copyWith(currentChapter: state.currentChapter - 1);
+      }
+    } else if (details.velocity.pixelsPerSecond.dx < 0) {
+      //Left Swipe
+      if (state.currentBook == state.books.length - 1 &&
+          state.currentChapter == state.chapters) {
+        return;
+      } else if (state.currentBook < state.books.length &&
+          state.currentChapter == state.chapters) {
+        if (!mounted) return;
+        state = state.copyWith(
+          currentBook: state.currentBook + 1,
+          currentChapter: 1,
+          chapters: await _fetchChapters(state.currentBook + 1),
+        );
+      } else {
+        state = state.copyWith(currentChapter: state.currentChapter + 1);
+      }
+    }
   }
 }
 
-final initialChapterState = Provider.autoDispose<ChapterState?>((ref) {
+final initialChapterState = Provider.autoDispose<ChapterState>((ref) {
   final books = ref.watch(booksProvider(Testaments.allBooks)).asData?.value;
   if (books != null) {
-    final initialBookChapters = ref
-        .watch(chapterCountProvider(int.parse(books[0].bookId)))
-        .asData
-        ?.value;
-    final chapters =
-        List.generate(initialBookChapters ?? 0, (index) => index + 1);
+    final firstBook = books.first;
+    final initialBookChapters =
+        ref.watch(totalChaptersProvider(firstBook.bookNumber)).asData?.value;
     return ChapterState(
-        currentBook: 0, currentChapter: 1, chapters: chapters, books: books);
+      currentBook: firstBook.bookNumber - 1,
+      currentChapter: 1,
+      chapters: initialBookChapters ?? 0,
+      books: books,
+    );
   } else {
-    return null;
+    return ChapterState(
+      currentBook: -1,
+      currentChapter: -1,
+      chapters: 0,
+      books: const [],
+    );
   }
 });
 
 final chapterStateNotifierProvider = StateNotifierProvider.family
-    .autoDispose<ChapterStateNotifier, ChapterState, Testaments>(
+    .autoDispose<ChapterStateController, ChapterState, Testaments>(
         (ref, testament) {
   final initState = ref.watch(initialChapterState);
-  return ChapterStateNotifier(
+  return ChapterStateController(
     ref,
     testament,
-    initState ??
-        ChapterState(
-          currentBook: 1,
-          currentChapter: 1,
-          chapters: const [],
-          books: const [],
-        ),
+    initState,
   );
 });

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/chapter_controller.dart';
 import 'package:se_bible_project/models/book.dart';
+import 'package:se_bible_project/ui/chapter_selecting_widgets.dart';
 
 class BookButtonWidget extends ConsumerStatefulWidget {
   const BookButtonWidget({Key? key}) : super(key: key);
@@ -25,32 +26,23 @@ class _BookButtonWidgetState extends ConsumerState<BookButtonWidget> {
   Widget build(BuildContext context) {
     final chapterState =
         ref.watch(chapterStateNotifierProvider(Testaments.allBooks));
-
-    final chapterController =
-        ref.watch(chapterStateNotifierProvider(Testaments.allBooks).notifier);
-
     return TextButton(
       onPressed: () {
         showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return ListView.builder(
-                  itemCount: chapterState.books.length,
-                  itemBuilder: (context, index) {
-                    final book = chapterState.books[index];
-                    return ListTile(
-                      title: Text(
-                        book.name,
-                        style: const TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
-                      onTap: () {
-                        chapterController.setBook(int.parse(book.bookId));
-                      },
-                    );
-                  });
-            });
+          context: context,
+          isScrollControlled: true,
+          showDragHandle: true,
+          constraints: const BoxConstraints(maxWidth: 500),
+          builder: (context) => DraggableScrollableSheet(
+            expand: false,
+            minChildSize: 0.32,
+            initialChildSize: 0.48,
+            maxChildSize: 0.72,
+            builder: (context, controller) {
+              return ChapterSelectorWidget(controller: controller);
+            },
+          ),
+        );
       },
       style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(

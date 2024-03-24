@@ -30,4 +30,14 @@ class Verse {
   String toString() {
     return 'Verse {id: $id, bookId: $bookId, chapter: $chapter, verse: $verseNumber, text: $text}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Verse &&
+          runtimeType == other.runtimeType &&
+          verseNumber == other.verseNumber;
+
+  @override
+  int get hashCode => verseNumber.hashCode;
 }

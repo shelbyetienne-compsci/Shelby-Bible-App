@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:se_bible_project/ui/verse_widget.dart';
+import 'package:se_bible_project/controllers/verse_action_controller.dart';
 
 import '../controllers/chapter_controller.dart';
 import '../models/chapter.dart';
@@ -35,8 +35,10 @@ class BibleReaderListWidget extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    final verses =
-        chapter.verses.map((verse) => VerseSpan(verse: verse).build()).toList();
+    final verses = chapter.verses.map((verse) {
+      final verseSpan = ref.watch(verseActionStateNotifierProvider(verse));
+      return verseSpan.textSpan ?? const WidgetSpan(child: SizedBox.shrink());
+    }).toList();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

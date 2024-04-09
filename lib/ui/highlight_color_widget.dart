@@ -22,7 +22,7 @@ class HighlightColorsWidget extends ConsumerWidget {
             onTap: () {
               ref
                   .read(currentHighlightColorController.notifier)
-                  .setColor(null);
+                  .removeColor();
               clearHighlights();
             },
             child: Container(
@@ -44,7 +44,7 @@ class HighlightColorsWidget extends ConsumerWidget {
               onTap: () {
                 ref
                     .read(currentHighlightColorController.notifier)
-                    .setColor(color);
+                    .setColor(color.withOpacity(.75));
                 clearHighlights();
               },
               child: Container(

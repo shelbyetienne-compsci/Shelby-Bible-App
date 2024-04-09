@@ -25,15 +25,15 @@ class BibleReaderListWidget extends ConsumerStatefulWidget {
 }
 
 class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
-  Color? highlightColor;
   Set<String> selectedVerses = {};
   bool isOpen = false;
 
   void clearHighlights({required bool shouldPop}) {
     setState(() {
-      selectedVerses.clear();
+      selectedVerses = {};
       isOpen = false;
     });
+    ref.read(currentHighlightColorController.notifier).shouldSetColor(false);
     if (shouldPop) {
       Navigator.pop(context);
     }
@@ -46,8 +46,10 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
       });
       if (selectedVerses.isEmpty && Navigator.canPop(context)) {
         Navigator.pop(context);
+        ref.read(currentHighlightColorController.notifier).shouldSetColor(false);
       }
     } else {
+      ref.read(currentHighlightColorController.notifier).shouldSetColor(true);
       setState(() {
         selectedVerses.add(verse.id);
       });
@@ -88,7 +90,6 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
           .closed
           .whenComplete(() {
         clearHighlights(shouldPop: false);
-        ref.read(currentHighlightColorController.notifier).setColor(null);
       });
     }
   }

@@ -45,22 +45,33 @@ class VerseActionController extends Controller<VerseActionState> {
 
   Function() onTap;
 
+  // figure out another way
+  final _nilColor = Colors.transparent;
+
   VerseActionController(this.ref, this.onTap, super.state) {
     build();
     ref.listen(currentHighlightColorController, (previous, next) {
       if (previous != next) {
         if (state.isSelected) {
-          if (previous?.color == null && next.color == null) {
+          if (previous == null) {
+            if (next.color != null) {
+              setHighlight(next.color!);
+            }
             clearNoSet();
-          } else if (previous?.color == null && next.color != null) {
-            setHighlight(next.color!);
-          } else if (previous?.color != null && next.color == null) {
-            removeHighlight();
-          } else if (previous?.color != null && next.color != null) {
-            //TODO: bug!!! prev and next are the same when I press the clear highlight
-            setHighlight(next.color!);
           } else {
-            removeHighlight();
+            if (previous.colorIsNull && next.colorIsNull == false) {
+              setHighlight(next.color!);
+            } else if (previous.colorIsNull == false &&
+                next.colorIsNull == false &&
+                previous.color != next.color) {
+              setHighlight(next.color!);
+            } else if (previous.colorIsNull == false && next.colorIsNull && state.isHighlight && next.shouldSetColor == true && previous.color != _nilColor) {
+              removeHighlight();
+            } else if (previous.colorIsNull && next.colorIsNull && state.isHighlight && next.shouldSetColor == true  && previous.color != _nilColor) {
+              removeHighlight();
+            } else if(next.shouldSetColor == false){
+              setSelected(false);
+            }
           }
         }
       }
@@ -75,9 +86,13 @@ class VerseActionController extends Controller<VerseActionState> {
     build();
   }
 
+  void setSelected(bool isSelected){
+    state = state.copyWith(isSelected: false);
+    build();
+  }
   void clearNoSet() {
     state = state.copyWith(
-      highlightColor: null,
+      highlightColor: _nilColor,
       isSelected: false,
     );
     // add to DB
@@ -96,7 +111,7 @@ class VerseActionController extends Controller<VerseActionState> {
 
   void removeHighlight() {
     state = state.copyWith(
-      highlightColor: null,
+      highlightColor: _nilColor,
       isHighlight: false,
       isSelected: false,
     );
@@ -110,6 +125,7 @@ class VerseActionController extends Controller<VerseActionState> {
         onTapVerse();
         log(state.verse.id);
       };
+
     state = state.copyWith(
       textSpan: TextSpan(
         text: state.verse.verseNumber,

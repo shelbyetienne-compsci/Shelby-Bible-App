@@ -6,8 +6,11 @@ import '../controllers/highlight_controller.dart';
 class HighlightColorsWidget extends ConsumerWidget {
   final Function() clearHighlights;
 
+  final Set<String> selectedVerses;
+
   const HighlightColorsWidget({
     required this.clearHighlights,
+    required this.selectedVerses,
     super.key,
   });
 
@@ -22,7 +25,7 @@ class HighlightColorsWidget extends ConsumerWidget {
             onTap: () {
               ref
                   .read(currentHighlightColorController.notifier)
-                  .setColor(null);
+                  .removeColor(selectedVerses);
               clearHighlights();
             },
             child: Container(
@@ -35,7 +38,6 @@ class HighlightColorsWidget extends ConsumerWidget {
             ),
           ),
         ),
-
         for (final color in highlightColors)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -44,7 +46,7 @@ class HighlightColorsWidget extends ConsumerWidget {
               onTap: () {
                 ref
                     .read(currentHighlightColorController.notifier)
-                    .setColor(color);
+                    .setColor(color, selectedVerses);
                 clearHighlights();
               },
               child: Container(

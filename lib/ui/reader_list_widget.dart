@@ -31,7 +31,7 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
 
   void clearHighlights({required bool shouldPop}) {
     setState(() {
-      selectedVerses.clear();
+      selectedVerses = {};
       isOpen = false;
     });
     if (shouldPop) {
@@ -68,6 +68,9 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
                       alignment: Alignment.topRight,
                       child: TextButton(
                         onPressed: () {
+                          ref
+                              .read(currentHighlightColorController.notifier)
+                              .removeSelected();
                           clearHighlights(shouldPop: true);
                         },
                         child: const Text('X'),
@@ -78,6 +81,7 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
                         clearHighlights: () {
                           clearHighlights(shouldPop: true);
                         },
+                        selectedVerses: selectedVerses,
                       ),
                     ),
                   ],
@@ -87,8 +91,8 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
           )
           .closed
           .whenComplete(() {
+
         clearHighlights(shouldPop: false);
-        ref.read(currentHighlightColorController.notifier).setColor(null);
       });
     }
   }

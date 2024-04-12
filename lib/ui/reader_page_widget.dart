@@ -32,6 +32,7 @@ class _BibleReaderPageState extends ConsumerState<BibleReaderPageWidget> {
     return Scaffold(
       appBar: AppBar(
         title: const BookButtonWidget(),
+        automaticallyImplyLeading: false,
       ),
       body: GestureDetector(
         onHorizontalDragEnd: (details) async {

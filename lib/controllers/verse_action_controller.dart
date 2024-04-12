@@ -97,6 +97,10 @@ class VerseActionController extends Controller<VerseActionState> {
     build();
   }
 
+  Color? get _displayHighlightColor => state.highlightColor == _nilColor
+      ? _nilColor
+      : state.highlightColor?.withOpacity(0.8);
+
   void build() {
     final gestureRecognizer = TapGestureRecognizer()
       ..onTap = () {
@@ -116,7 +120,7 @@ class VerseActionController extends Controller<VerseActionState> {
               decorationStyle: TextDecorationStyle.dashed,
               fontWeight: FontWeight.normal,
               fontSize: 20,
-              backgroundColor: state.highlightColor,
+              backgroundColor: _displayHighlightColor,
             ),
           ),
           const TextSpan(text: ' '),
@@ -127,7 +131,7 @@ class VerseActionController extends Controller<VerseActionState> {
           decorationStyle: TextDecorationStyle.dashed,
           fontWeight: FontWeight.bold,
           fontSize: 20,
-          backgroundColor: state.highlightColor,
+          backgroundColor: _displayHighlightColor,
         ),
       ),
     );

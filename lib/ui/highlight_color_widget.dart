@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:se_bible_project/controllers/selected_verse_controller.dart';
 
 import '../controllers/highlight_controller.dart';
 
@@ -14,7 +13,6 @@ class HighlightColorsWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedVerses = ref.watch(selectedVersesNotifier);
     return Row(
       children: [
         Padding(

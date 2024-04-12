@@ -35,7 +35,7 @@ class HighlightColor extends State {
           runtimeType == other.runtimeType &&
           color == other.color &&
           isHighlight == other.isHighlight &&
-          setEquals(selectedVerses, other.selectedVerses);
+          selectedVerses == other.selectedVerses;
 
   @override
   int get hashCode =>

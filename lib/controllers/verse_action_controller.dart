@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/highlight_controller.dart';
+import 'package:se_bible_project/controllers/selected_verse_controller.dart';
 
 import '../helper.dart';
 import '../models/verse.dart';
@@ -50,29 +51,20 @@ class VerseActionController extends Controller<VerseActionState> {
   VerseActionController(this.ref, this.onTap, super.state) {
     build();
     ref.listen(currentHighlightColorController, (previous, next) {
-      if (previous != next) {
-        if (state.isSelected) {
-          if (next.color != _nilColor && next.selectedVerses.isNotEmpty) {
-            setHighlight(next.color);
-          } else if (next.color == _nilColor && next.selectedVerses.isNotEmpty) {
-            removeHighlight();
-          } else {
-            clearNoSet();
-          }
-
-          // if (previous?.color == null && next.color == _nilColor) {
-          //   clearNoSet();
-          // } else if (previous?.color == null && next.color != _nilColor) {
-          //   setHighlight(next.color);
-          // } else if (previous?.color != null && next.color == _nilColor) {
-          //   removeHighlight();
-          // } else if (previous?.color != null && next.color != _nilColor) {
-          //   //TODO: bug!!! prev and next are the same when I press the clear highlight
-          //   setHighlight(next.color);
-          // } else {
-          //   removeHighlight();
-          // }
+      if (state.isSelected) {
+        if (next.color != _nilColor) {
+          setHighlight(next.color);
+        } else if (next.color == _nilColor) {
+          removeHighlight();
         }
+      }
+    });
+    ref.listen(selectedVersesNotifier, (previous, next) {
+      if (next.isEmpty) {
+        state = state.copyWith(
+          isSelected: false,
+        );
+        build();
       }
     });
   }
@@ -82,16 +74,6 @@ class VerseActionController extends Controller<VerseActionState> {
       isSelected: !state.isSelected,
     );
     onTap.call();
-    build();
-  }
-
-
-  void clearNoSet() {
-    state = state.copyWith(
-      highlightColor: _nilColor,
-      isSelected: false,
-    );
-    // add to DB
     build();
   }
 

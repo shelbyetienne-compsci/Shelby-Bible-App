@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide State;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:se_bible_project/controllers/selected_verse_controller.dart';
 
 import '../helper.dart';
 
@@ -32,17 +34,23 @@ class HighlightColor extends State {
       identical(this, other) ||
       other is HighlightColor &&
           runtimeType == other.runtimeType &&
-          selectedVerses == other.selectedVerses;
+          color == other.color &&
+          isHighlight == other.isHighlight &&
+          setEquals(selectedVerses, other.selectedVerses);
 
   @override
-  int get hashCode => selectedVerses.hashCode;
+  int get hashCode =>
+      color.hashCode ^ isHighlight.hashCode ^ selectedVerses.hashCode;
 }
 
 class HighlightController extends Controller<HighlightColor> {
-  HighlightController(super.state);
+  AutoDisposeRef ref;
 
-  void setColor(Color? color, Set<String> selectedVerses) {
-    if(selectedVerses.isNotEmpty){
+  HighlightController(this.ref, super.state);
+
+  void setColor(Color? color) {
+    final selectedVerses = ref.read(selectedVersesNotifier).verses;
+    if (selectedVerses.isNotEmpty) {
       state = state.copyWith(
         color: color,
         isHighlight: true,
@@ -51,8 +59,9 @@ class HighlightController extends Controller<HighlightColor> {
     }
   }
 
-  void removeColor(Set<String> selectedVerses) {
-    if(selectedVerses.isNotEmpty) {
+  void removeColor() {
+    final selectedVerses = ref.read(selectedVersesNotifier).verses;
+    if (selectedVerses.isNotEmpty) {
       state = state.copyWith(
         color: Colors.transparent,
         isHighlight: false,
@@ -60,15 +69,12 @@ class HighlightController extends Controller<HighlightColor> {
       );
     }
   }
-
-  void removeSelected(){
-    state.copyWith(selectedVerses: {});
-  }
 }
 
 final currentHighlightColorController =
     StateNotifierProvider.autoDispose<HighlightController, HighlightColor>(
   (ref) => HighlightController(
+    ref,
     HighlightColor(),
   ),
 );

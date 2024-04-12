@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:se_bible_project/controllers/highlight_controller.dart';
 import 'package:se_bible_project/controllers/verse_action_controller.dart';
 
 import '../controllers/chapter_controller.dart';
+import '../controllers/selected_verse_controller.dart';
 import '../models/chapter.dart';
 import '../models/verse.dart';
 import '../repository/providers.dart';
@@ -26,12 +26,18 @@ class BibleReaderListWidget extends ConsumerStatefulWidget {
 
 class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
   Color? highlightColor;
-  Set<String> selectedVerses = {};
+  late SelectedVersesNotifier selectedVerses;
   bool isOpen = false;
 
-  void clearHighlights({required bool shouldPop}) {
+  @override
+  void initState() {
+    super.initState();
+    selectedVerses = ref.read(selectedVersesNotifier);
+  }
+
+  void clearSelected({required bool shouldPop}) {
+    selectedVerses.removeAll();
     setState(() {
-      selectedVerses = {};
       isOpen = false;
     });
     if (shouldPop) {
@@ -41,16 +47,12 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
 
   void onVerseTap(Verse verse) {
     if (selectedVerses.contains(verse.id)) {
-      setState(() {
-        selectedVerses.remove(verse.id);
-      });
+      selectedVerses.removeVerse(verse.id);
       if (selectedVerses.isEmpty && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
     } else {
-      setState(() {
-        selectedVerses.add(verse.id);
-      });
+      selectedVerses.addVerse(verse.id);
     }
     if (isOpen == false && selectedVerses.isNotEmpty) {
       isOpen = true;
@@ -68,20 +70,16 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
                       alignment: Alignment.topRight,
                       child: TextButton(
                         onPressed: () {
-                          ref
-                              .read(currentHighlightColorController.notifier)
-                              .removeSelected();
-                          clearHighlights(shouldPop: true);
+                          clearSelected(shouldPop: true);
                         },
                         child: const Text('X'),
                       ),
                     ),
                     Flexible(
                       child: HighlightColorsWidget(
-                        clearHighlights: () {
-                          clearHighlights(shouldPop: true);
+                        clearSelected: () {
+                          clearSelected(shouldPop: true);
                         },
-                        selectedVerses: selectedVerses,
                       ),
                     ),
                   ],
@@ -91,8 +89,7 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
           )
           .closed
           .whenComplete(() {
-
-        clearHighlights(shouldPop: false);
+        clearSelected(shouldPop: false);
       });
     }
   }

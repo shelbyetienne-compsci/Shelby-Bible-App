@@ -1,29 +1,40 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
 
-class SelectedVersesController extends ChangeNotifier {
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class SelectedVersesNotifier extends ChangeNotifier {
   final Set<String> verses = <String>{};
 
   bool get isEmpty => verses.isEmpty;
 
   bool get isNotEmpty => verses.isNotEmpty;
 
-  bool contains(String value){
+  bool contains(String value) {
     return verses.contains(value);
   }
-  void addVerse(String value){
-    if(verses.contains(value)) return;
+
+  void addVerse(String value) {
+    if (verses.contains(value)) return;
     verses.add(value);
-    notifyListeners();
+    updateListeners();
   }
 
-  void removeVerse(String value){
+  void removeVerse(String value) {
     verses.remove(value);
-    notifyListeners();
+    updateListeners();
   }
 
-  void removeAll(){
+  void removeAll() {
     verses.clear();
-    notifyListeners();
+    updateListeners();
   }
 
+  void updateListeners() {
+    log('verses: $verses');
+    notifyListeners();
+  }
 }
+
+final selectedVersesNotifier =
+    ChangeNotifierProvider((ref) => SelectedVersesNotifier());

@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:se_bible_project/controllers/selected_verse_controller.dart';
 
 import '../controllers/highlight_controller.dart';
 
 class HighlightColorsWidget extends ConsumerWidget {
-  final Function() clearHighlights;
-
-  final Set<String> selectedVerses;
+  final Function() clearSelected;
 
   const HighlightColorsWidget({
-    required this.clearHighlights,
-    required this.selectedVerses,
+    required this.clearSelected,
     super.key,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final selectedVerses = ref.watch(selectedVersesNotifier);
     return Row(
       children: [
         Padding(
@@ -25,8 +24,8 @@ class HighlightColorsWidget extends ConsumerWidget {
             onTap: () {
               ref
                   .read(currentHighlightColorController.notifier)
-                  .removeColor(selectedVerses);
-              clearHighlights();
+                  .removeColor();
+              clearSelected();
             },
             child: Container(
               width: 32,
@@ -46,8 +45,8 @@ class HighlightColorsWidget extends ConsumerWidget {
               onTap: () {
                 ref
                     .read(currentHighlightColorController.notifier)
-                    .setColor(color, selectedVerses);
-                clearHighlights();
+                    .setColor(color);
+                clearSelected();
               },
               child: Container(
                 width: 32,

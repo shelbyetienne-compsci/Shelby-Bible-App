@@ -1,8 +1,10 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart' hide State;
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart' hide State;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:se_bible_project/controllers/highlight_controller.dart';
+import 'package:se_bible_project/controllers/selected_verse_controller.dart';
 
 import '../helper.dart';
 import '../models/verse.dart';
@@ -13,13 +15,13 @@ class VerseActionState extends State {
   final Verse verse;
   final bool isSelected;
   final bool isHighlight;
-  final Color? highLightColor;
+  final Color? highlightColor;
 
   VerseActionState({
     required this.verse,
     this.isSelected = false,
     this.isHighlight = false,
-    this.highLightColor,
+    this.highlightColor,
     this.textSpan,
   });
 
@@ -27,27 +29,71 @@ class VerseActionState extends State {
     Verse? verse,
     bool? isSelected,
     bool? isHighlight,
-    Color? highLightColor,
+    Color? highlightColor,
     TextSpan? textSpan,
   }) =>
       VerseActionState(
         verse: verse ?? this.verse,
         isSelected: isSelected ?? this.isSelected,
         isHighlight: isHighlight ?? this.isHighlight,
-        highLightColor: highLightColor ?? this.highLightColor,
+        highlightColor: highlightColor ?? this.highlightColor,
         textSpan: textSpan ?? this.textSpan,
       );
 }
 
 class VerseActionController extends Controller<VerseActionState> {
-  VerseActionController(super.state) {
+  AutoDisposeRef ref;
+
+  Function() onTap;
+
+  final _nilColor = Colors.transparent;
+
+  VerseActionController(this.ref, this.onTap, super.state) {
     build();
+    ref.listen(currentHighlightColorController, (previous, next) {
+      if (state.isSelected) {
+        if (next.color != _nilColor) {
+          setHighlight(next.color);
+        } else if (next.color == _nilColor) {
+          removeHighlight();
+        }
+      }
+    });
+    ref.listen(selectedVersesNotifier, (previous, next) {
+      if (next.isEmpty) {
+        state = state.copyWith(
+          isSelected: false,
+        );
+        build();
+      }
+    });
   }
 
   void onTapVerse() {
     state = state.copyWith(
       isSelected: !state.isSelected,
     );
+    onTap.call();
+    build();
+  }
+
+  void setHighlight(Color color) {
+    state = state.copyWith(
+      highlightColor: color,
+      isHighlight: true,
+      isSelected: false,
+    );
+    // add to DB
+    build();
+  }
+
+  void removeHighlight() {
+    state = state.copyWith(
+      highlightColor: _nilColor,
+      isHighlight: false,
+      isSelected: false,
+    );
+    // remove to DB
     build();
   }
 
@@ -66,32 +112,53 @@ class VerseActionController extends Controller<VerseActionState> {
             text: state.verse.text,
             recognizer: gestureRecognizer,
             style: TextStyle(
-              // TODO: figure out how to get this to rebuild in order to implement Verse Actions
-              // WIDGETSPAN????
               decoration: state.isSelected ? TextDecoration.underline : null,
               decorationStyle: TextDecorationStyle.dashed,
               fontWeight: FontWeight.normal,
               fontSize: 20,
+              backgroundColor: state.highlightColor,
             ),
           ),
           const TextSpan(text: ' '),
         ],
         recognizer: gestureRecognizer,
-        style: const TextStyle(
+        style: TextStyle(
+          decoration: state.isSelected ? TextDecoration.underline : null,
+          decorationStyle: TextDecorationStyle.dashed,
           fontWeight: FontWeight.bold,
-          height: 1.5,
-          fontSize: 16,
+          fontSize: 20,
+          backgroundColor: state.highlightColor,
         ),
       ),
     );
   }
 }
 
+class VerseTap {
+  final Verse verse;
+  final Function() onTap;
+
+  const VerseTap({required this.verse, required this.onTap});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is VerseTap &&
+          runtimeType == other.runtimeType &&
+          verse == other.verse;
+
+  @override
+  int get hashCode => verse.hashCode;
+}
+
 final verseActionStateNotifierProvider = StateNotifierProvider.family
-    .autoDispose<VerseActionController, VerseActionState, Verse>((ref, verse) {
+    .autoDispose<VerseActionController, VerseActionState, VerseTap>(
+        (ref, verseTap) {
   return VerseActionController(
+    ref,
+    verseTap.onTap,
     VerseActionState(
-      verse: verse,
+      verse: verseTap.verse,
     ),
   );
 });

@@ -26,6 +26,7 @@ class SelectedVersesNotifier extends ChangeNotifier {
   }
 
   void removeAll() {
+    if(verses.isEmpty) return;
     verses.clear();
     updateListeners();
   }

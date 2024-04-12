@@ -120,7 +120,6 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
           VerseTap(
             verse: verse,
             onTap: () {
-              log('hello');
               onVerseTap(verse);
             },
           ),

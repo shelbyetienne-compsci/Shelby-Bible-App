@@ -9,7 +9,6 @@ import '../helper.dart';
 class HighlightColor extends State {
   final Color color;
   final bool isHighlight;
-
   final Set<String> selectedVerses;
 
   HighlightColor({

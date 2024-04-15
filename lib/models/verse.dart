@@ -26,6 +26,14 @@ class Verse {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'b': bookId,
+        'c': chapter,
+        'v': verseNumber,
+        't': text,
+      };
+
   @override
   String toString() {
     return 'Verse {id: $id, bookId: $bookId, chapter: $chapter, verse: $verseNumber, text: $text}';

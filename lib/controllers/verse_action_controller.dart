@@ -13,32 +13,47 @@ import '../models/verse.dart';
 class VerseActionState extends State {
   final TextSpan? textSpan;
   final Verse verse;
+
+  final String verseId;
   final bool isSelected;
-  final bool isHighlight;
   final Color? highlightColor;
 
   VerseActionState({
     required this.verse,
+    required this.verseId,
     this.isSelected = false,
-    this.isHighlight = false,
     this.highlightColor,
     this.textSpan,
   });
 
   VerseActionState copyWith({
-    Verse? verse,
     bool? isSelected,
-    bool? isHighlight,
     Color? highlightColor,
     TextSpan? textSpan,
   }) =>
       VerseActionState(
-        verse: verse ?? this.verse,
+        verse: verse,
+        verseId: verseId,
         isSelected: isSelected ?? this.isSelected,
-        isHighlight: isHighlight ?? this.isHighlight,
         highlightColor: highlightColor ?? this.highlightColor,
         textSpan: textSpan ?? this.textSpan,
       );
+
+  factory VerseActionState.fromJson(dynamic json) {
+    return VerseActionState(
+      verse: Verse.fromJson(json['verse']),
+      highlightColor: Color(
+        json['highlightColor'] as int,
+      ),
+      verseId: json['verseId'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'verse': verse.toJson(),
+        'highlightColor': highlightColor?.value,
+        'verseId': verseId,
+      };
 }
 
 class VerseActionController extends Controller<VerseActionState> {
@@ -80,7 +95,6 @@ class VerseActionController extends Controller<VerseActionState> {
   void setHighlight(Color color) {
     state = state.copyWith(
       highlightColor: color,
-      isHighlight: true,
       isSelected: false,
     );
     // add to DB
@@ -90,7 +104,6 @@ class VerseActionController extends Controller<VerseActionState> {
   void removeHighlight() {
     state = state.copyWith(
       highlightColor: _nilColor,
-      isHighlight: false,
       isSelected: false,
     );
     // remove to DB
@@ -163,6 +176,7 @@ final verseActionStateNotifierProvider = StateNotifierProvider.family
     verseTap.onTap,
     VerseActionState(
       verse: verseTap.verse,
+      verseId: verseTap.verse.id,
     ),
   );
 });

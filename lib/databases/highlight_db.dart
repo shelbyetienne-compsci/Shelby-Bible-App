@@ -1,22 +1,34 @@
-import 'package:se_bible_project/databases/database.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
-
 import '../controllers/verse_action_controller.dart';
+import 'database.dart';
+
+const String _kHighlightsDB = 'Highlights';
+const String _kVerseId = 'verseId';
+const String _kHighlightColor = 'highlightColor';
+
+void registerHighlightSchema(Database db) async {
+  await db.execute(
+      'CREATE TABLE $_kHighlightsDB ($_kVerseId TEXT PRIMARY KEY, $_kHighlightColor INTEGER NOT NULL);');
+}
 
 class HighlightTable implements DatabaseSchema<VerseActionState> {
-  final String _tableName = 'Highlights';
   final Database _db;
 
   const HighlightTable(this._db);
 
   @override
   Future<int> insert(VerseActionState data) {
-    return _db.insert(_tableName, data.toJson());
+    return _db.insert(
+      _kHighlightsDB,
+      data.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   @override
   Future<List<VerseActionState>?> read() async {
-    final maps = await _db.query(_tableName);
+    final maps = await _db.query(_kHighlightsDB);
     if (maps.isEmpty) return null;
     return List.generate(
       maps.length,
@@ -27,21 +39,38 @@ class HighlightTable implements DatabaseSchema<VerseActionState> {
   }
 
   @override
-  Future<int> update(
-    VerseActionState data, {
-    String? where = 'verseId = ?',
-    List? whereArgs,
+  Future<int> delete({
+    required String verseId,
   }) {
-    return _db.update(
-      _tableName,
-      data.toJson(),
-      where: where,
-      whereArgs: whereArgs,
+    return _db.delete(
+      _kHighlightsDB,
+      where: '$_kVerseId = ?',
+      whereArgs: [
+        verseId,
+      ],
     );
   }
 
   @override
-  Future<int> delete({String where = 'verseId = ?', required List whereArgs}) {
-    return _db.delete(_tableName, where: where, whereArgs: whereArgs);
+  Future<VerseActionState?> get({required String verseId}) async {
+    final maps = await _db.query(
+      _kHighlightsDB,
+      where: '$_kVerseId = ?',
+      whereArgs: [
+        verseId,
+      ],
+    );
+    if (maps.isEmpty) return null;
+    return VerseActionState.fromJson(
+      maps.first,
+    );
   }
 }
+
+final highlightTableProvider = Provider<HighlightTable>(
+  (ref) {
+    return HighlightTable(
+      ref.read(initialDatabaseProvider),
+    );
+  },
+);

@@ -9,20 +9,18 @@ abstract class DatabaseSchema<T> {
 
   Future<List<T>?> read();
 
-  Future<int> update(
-    T data, {
-    String? where,
-    List<dynamic>? whereArgs,
+  Future<T?> get({
+    required String verseId,
   });
 
-  Future<int> delete({required String where, required List<dynamic> whereArgs});
+  Future<int> delete({required String verseId});
 }
 
 class DatabaseManager {
   static const int _version = 1;
   static const String _dbName = 'study_bible.db';
 
-  static Future<Database> _getDb({
+  static Future<Database> initDb({
     FutureOr<void> Function(Database, int)? onCreate,
   }) async {
     return openDatabase(
@@ -33,10 +31,6 @@ class DatabaseManager {
   }
 }
 
-final databaseManagerProvider = FutureProvider<Database>(
-  (ref) async => DatabaseManager._getDb(
-    onCreate: (db, version) {
-
-    },
-  ),
-);
+final initialDatabaseProvider = Provider<Database>((ref) {
+  throw UnimplementedError('You must override initialDatabaseProvider');
+});

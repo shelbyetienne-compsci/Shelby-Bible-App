@@ -6,22 +6,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/highlight_controller.dart';
 import 'package:se_bible_project/controllers/selected_verse_controller.dart';
 
+import '../databases/highlight_db.dart';
 import '../helper.dart';
 import '../models/verse.dart';
 
 @immutable
 class VerseActionState extends State {
   final TextSpan? textSpan;
-  final Verse verse;
-
+  final Verse? verse;
   final String verseId;
   final bool isSelected;
   final Color? highlightColor;
 
   VerseActionState({
-    required this.verse,
     required this.verseId,
     this.isSelected = false,
+    this.verse,
     this.highlightColor,
     this.textSpan,
   });
@@ -41,7 +41,6 @@ class VerseActionState extends State {
 
   factory VerseActionState.fromJson(dynamic json) {
     return VerseActionState(
-      verse: Verse.fromJson(json['verse']),
       highlightColor: Color(
         json['highlightColor'] as int,
       ),
@@ -50,10 +49,14 @@ class VerseActionState extends State {
   }
 
   Map<String, dynamic> toJson() => {
-        'verse': verse.toJson(),
         'highlightColor': highlightColor?.value,
         'verseId': verseId,
       };
+
+  @override
+  String toString() {
+    return 'VerseActionState{textSpan: $textSpan, verse: $verse, verseId: $verseId, isSelected: $isSelected, highlightColor: $highlightColor}';
+  }
 }
 
 class VerseActionController extends Controller<VerseActionState> {
@@ -64,6 +67,10 @@ class VerseActionController extends Controller<VerseActionState> {
   final _nilColor = Colors.transparent;
 
   VerseActionController(this.ref, this.onTap, super.state) {
+    ref.read(highlightTableProvider).get(verseId: state.verseId).then((verse) {
+      state = state.copyWith(highlightColor: verse?.highlightColor);
+      build();
+    });
     build();
     ref.listen(currentHighlightColorController, (previous, next) {
       if (state.isSelected) {
@@ -92,20 +99,22 @@ class VerseActionController extends Controller<VerseActionState> {
     build();
   }
 
-  void setHighlight(Color color) {
+  void setHighlight(Color color) async {
     state = state.copyWith(
       highlightColor: color,
       isSelected: false,
     );
+    await ref.read(highlightTableProvider).insert(state);
     // add to DB
     build();
   }
 
-  void removeHighlight() {
+  void removeHighlight() async {
     state = state.copyWith(
       highlightColor: _nilColor,
       isSelected: false,
     );
+    await ref.read(highlightTableProvider).delete(verseId: state.verseId);
     // remove to DB
     build();
   }
@@ -118,15 +127,15 @@ class VerseActionController extends Controller<VerseActionState> {
     final gestureRecognizer = TapGestureRecognizer()
       ..onTap = () {
         onTapVerse();
-        log(state.verse.id);
+        log(state.verse!.id);
       };
     state = state.copyWith(
       textSpan: TextSpan(
-        text: state.verse.verseNumber,
+        text: state.verse?.verseNumber,
         children: [
           const TextSpan(text: ' '),
           TextSpan(
-            text: state.verse.text,
+            text: state.verse?.text,
             recognizer: gestureRecognizer,
             style: TextStyle(
               decoration: state.isSelected ? TextDecoration.underline : null,

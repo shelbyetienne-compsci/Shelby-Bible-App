@@ -15,6 +15,11 @@ class Book {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'n': name,
+        'b': bookNumber,
+      };
+
   @override
   String toString() {
     return 'Book {name: $name, bookId: $bookNumber}';

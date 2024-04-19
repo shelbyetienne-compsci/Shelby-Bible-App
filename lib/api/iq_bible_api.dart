@@ -66,7 +66,11 @@ class BibleApi {
     for (final verse in json) {
       verses.add(Verse.fromJson(verse));
     }
-    return Chapter(currentBook: bookId, currentChapter: chapterId, verses: verses);
+    return Chapter(
+      currentBook: bookId,
+      currentChapter: chapterId,
+      verses: verses,
+    );
   }
 
   Future<int> getChapterCount(int bookId) async {
@@ -81,6 +85,6 @@ class BibleApi {
   }
 }
 
-final bibleApiProvider = Provider.autoDispose((ref) {
+final bibleApiProvider = Provider((ref) {
   return BibleApi();
 });

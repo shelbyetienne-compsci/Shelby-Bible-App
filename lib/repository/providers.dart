@@ -1,14 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../api/iq_bible_api.dart';
 import '../models/book.dart';
 import '../models/chapter.dart';
 import 'iq_bible_repository.dart';
-
-final bibleRepository = Provider((ref) {
-  final bibleApi = ref.read(bibleApiProvider);
-  return BibleRepository(bibleApi);
-});
 
 final chaptersProvider =
 FutureProvider.family.autoDispose<Chapter, ChapterInfo>((ref, info) async {

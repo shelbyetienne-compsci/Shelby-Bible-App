@@ -1,14 +1,30 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:se_bible_project/databases/database.dart';
 import 'package:se_bible_project/routes.dart';
 import 'package:se_bible_project/ui/reader_page_widget.dart';
 
-void main() {
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+import 'databases/highlight_db.dart';
+
+void main(List<String> args) async {
+  await runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    final initializeDB = await DatabaseManager.initDb(
+      onCreate: (db, version) async {
+        registerHighlightSchema(db);
+      },
+    );
+    runApp(
+      ProviderScope(
+        overrides: [
+          initialDatabaseProvider.overrideWithValue(initializeDB),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  }, (_, __) {});
 }
 
 class MyApp extends StatelessWidget {
@@ -27,7 +43,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends ConsumerStatefulWidget {
-  const MyHomePage({super.key,});
+  const MyHomePage({
+    super.key,
+  });
 
   @override
   ConsumerState<MyHomePage> createState() => _MyHomePageState();

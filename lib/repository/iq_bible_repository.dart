@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/api/iq_bible_api.dart';
 
 import '../models/book.dart';
@@ -34,3 +35,8 @@ class BibleRepository {
     return _api.getVerseCount(bookId, chapterId);
   }
 }
+
+final bibleRepository = Provider((ref) {
+  final bibleApi = ref.read(bibleApiProvider);
+  return BibleRepository(bibleApi);
+});

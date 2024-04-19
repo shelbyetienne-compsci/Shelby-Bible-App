@@ -13,15 +13,15 @@ import '../models/verse.dart';
 @immutable
 class VerseActionState extends State {
   final TextSpan? textSpan;
-  final Verse? verse;
+  final Verse verse;
   final String verseId;
   final bool isSelected;
   final Color? highlightColor;
 
   VerseActionState({
     required this.verseId,
+    required this.verse,
     this.isSelected = false,
-    this.verse,
     this.highlightColor,
     this.textSpan,
   });
@@ -38,20 +38,6 @@ class VerseActionState extends State {
         highlightColor: highlightColor ?? this.highlightColor,
         textSpan: textSpan ?? this.textSpan,
       );
-
-  factory VerseActionState.fromJson(dynamic json) {
-    return VerseActionState(
-      highlightColor: Color(
-        json['highlightColor'] as int,
-      ),
-      verseId: json['verseId'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'highlightColor': highlightColor?.value,
-        'verseId': verseId,
-      };
 
   @override
   String toString() {
@@ -104,7 +90,12 @@ class VerseActionController extends Controller<VerseActionState> {
       highlightColor: color,
       isSelected: false,
     );
-    await ref.read(highlightTableProvider).insert(state);
+    await ref.read(highlightTableProvider).insert(
+          Highlights(
+            verseId: state.verseId,
+            highlightColor: state.highlightColor,
+          ),
+        );
     // add to DB
     build();
   }
@@ -127,15 +118,15 @@ class VerseActionController extends Controller<VerseActionState> {
     final gestureRecognizer = TapGestureRecognizer()
       ..onTap = () {
         onTapVerse();
-        log(state.verse!.id);
+        log(state.verse.id);
       };
     state = state.copyWith(
       textSpan: TextSpan(
-        text: state.verse?.verseNumber,
+        text: state.verse.verseNumber,
         children: [
           const TextSpan(text: ' '),
           TextSpan(
-            text: state.verse?.text,
+            text: state.verse.text,
             recognizer: gestureRecognizer,
             style: TextStyle(
               decoration: state.isSelected ? TextDecoration.underline : null,

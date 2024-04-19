@@ -1,6 +1,6 @@
+import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
-import '../controllers/verse_action_controller.dart';
 import 'database.dart';
 
 const String _kHighlightsDB = 'Highlights';
@@ -12,13 +12,37 @@ void registerHighlightSchema(Database db) async {
       'CREATE TABLE $_kHighlightsDB ($_kVerseId TEXT PRIMARY KEY, $_kHighlightColor INTEGER NOT NULL);');
 }
 
-class HighlightTable implements DatabaseSchema<VerseActionState> {
+class Highlights {
+  final String verseId;
+  final Color? highlightColor;
+
+  Highlights({
+    required this.verseId,
+    this.highlightColor,
+  });
+
+  factory Highlights.fromJson(dynamic json) {
+    return Highlights(
+      highlightColor: Color(
+        json[_kHighlightColor] as int,
+      ),
+      verseId: json[_kVerseId] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        _kHighlightColor: highlightColor?.value,
+        _kVerseId: verseId,
+      };
+}
+
+class HighlightTable implements DatabaseSchema<Highlights> {
   final Database _db;
 
   const HighlightTable(this._db);
 
   @override
-  Future<int> insert(VerseActionState data) {
+  Future<int> insert(Highlights data) {
     return _db.insert(
       _kHighlightsDB,
       data.toJson(),
@@ -27,12 +51,12 @@ class HighlightTable implements DatabaseSchema<VerseActionState> {
   }
 
   @override
-  Future<List<VerseActionState>?> read() async {
+  Future<List<Highlights>?> read() async {
     final maps = await _db.query(_kHighlightsDB);
     if (maps.isEmpty) return null;
     return List.generate(
       maps.length,
-      (index) => VerseActionState.fromJson(
+      (index) => Highlights.fromJson(
         maps[index],
       ),
     );
@@ -52,7 +76,7 @@ class HighlightTable implements DatabaseSchema<VerseActionState> {
   }
 
   @override
-  Future<VerseActionState?> get({required String whereArg}) async {
+  Future<Highlights?> get({required String whereArg}) async {
     final maps = await _db.query(
       _kHighlightsDB,
       where: '$_kVerseId = ?',
@@ -61,7 +85,7 @@ class HighlightTable implements DatabaseSchema<VerseActionState> {
       ],
     );
     if (maps.isEmpty) return null;
-    return VerseActionState.fromJson(
+    return Highlights.fromJson(
       maps.first,
     );
   }

@@ -40,24 +40,24 @@ class HighlightTable implements DatabaseSchema<VerseActionState> {
 
   @override
   Future<int> delete({
-    required String verseId,
+    required String whereArg,
   }) {
     return _db.delete(
       _kHighlightsDB,
       where: '$_kVerseId = ?',
       whereArgs: [
-        verseId,
+        whereArg,
       ],
     );
   }
 
   @override
-  Future<VerseActionState?> get({required String verseId}) async {
+  Future<VerseActionState?> get({required String whereArg}) async {
     final maps = await _db.query(
       _kHighlightsDB,
       where: '$_kVerseId = ?',
       whereArgs: [
-        verseId,
+        whereArg,
       ],
     );
     if (maps.isEmpty) return null;

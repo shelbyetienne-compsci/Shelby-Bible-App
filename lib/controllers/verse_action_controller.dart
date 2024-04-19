@@ -67,7 +67,7 @@ class VerseActionController extends Controller<VerseActionState> {
   final _nilColor = Colors.transparent;
 
   VerseActionController(this.ref, this.onTap, super.state) {
-    ref.read(highlightTableProvider).get(verseId: state.verseId).then((verse) {
+    ref.read(highlightTableProvider).get(whereArg: state.verseId).then((verse) {
       state = state.copyWith(highlightColor: verse?.highlightColor);
       build();
     });
@@ -114,7 +114,7 @@ class VerseActionController extends Controller<VerseActionState> {
       highlightColor: _nilColor,
       isSelected: false,
     );
-    await ref.read(highlightTableProvider).delete(verseId: state.verseId);
+    await ref.read(highlightTableProvider).delete(whereArg: state.verseId);
     // remove to DB
     build();
   }

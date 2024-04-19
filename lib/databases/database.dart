@@ -10,10 +10,10 @@ abstract class DatabaseSchema<T> {
   Future<List<T>?> read();
 
   Future<T?> get({
-    required String verseId,
+    required String whereArg,
   });
 
-  Future<int> delete({required String verseId});
+  Future<int> delete({required String whereArg});
 }
 
 class DatabaseManager {

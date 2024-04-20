@@ -164,7 +164,12 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
 
     return SingleChildScrollView(
       controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.only(
+        top: MediaQuery.paddingOf(context).top,
+        left: 16,
+        right: 16,
+        bottom: 8,
+      ),
       child: Text.rich(
         TextSpan(
           text: chapterState.currentBook != -1

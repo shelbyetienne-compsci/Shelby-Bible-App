@@ -1,19 +1,33 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/page_filter_controller.dart';
 import 'package:se_bible_project/ui/book_button_widget.dart';
 
-class StudyTopBarWidget extends ConsumerWidget {
+class StudyTopBarWidget extends ConsumerWidget implements PreferredSizeWidget {
   const StudyTopBarWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(readerAndNoteFilterProvider);
     final controller = ref.read(readerAndNoteFilterProvider.notifier);
-    return Padding(
-      padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
-      child: SizedBox(
-        height: 56,
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            bgColor,
+            bgColor.withOpacity(0),
+          ],
+          stops: const [0.9, 1.0],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: MediaQuery.paddingOf(context).top,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: filters.items.map((item) {
@@ -53,4 +67,7 @@ class StudyTopBarWidget extends ConsumerWidget {
       ),
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(600);
 }

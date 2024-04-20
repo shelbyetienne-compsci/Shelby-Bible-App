@@ -33,34 +33,37 @@ class _EditNoteWidgetState extends ConsumerState<EditNoteWidget> {
   @override
   Widget build(BuildContext context) {
     final notesDB = ref.read(notesTableProvider);
-    return Column(
-      children: [
-        TextField(
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            hintText: 'Title',
-          ),
-          controller: title,
-          maxLines: 1,
-          onChanged: (text) {
-            notesDB.update(
-                Notes(id: currentNote.id, title: text, body: body.text));
-          },
-        ),
-        Expanded(
-          child: TextField(
-            decoration: const InputDecoration(hintText: 'Enter notes...'),
-            controller: body,
-            expands: true,
-            maxLines: null,
+    return Padding(
+      padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
+      child: Column(
+        children: [
+          TextField(
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              hintText: 'Title',
+            ),
+            controller: title,
+            maxLines: 1,
             onChanged: (text) {
               notesDB.update(
-                  Notes(id: currentNote.id, title: title.text, body: text));
+                  Notes(id: currentNote.id, title: text, body: body.text));
             },
           ),
-        )
-      ],
+          Expanded(
+            child: TextField(
+              decoration: const InputDecoration(hintText: 'Enter notes...'),
+              controller: body,
+              expands: true,
+              maxLines: null,
+              onChanged: (text) {
+                notesDB.update(
+                    Notes(id: currentNote.id, title: title.text, body: text));
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 }

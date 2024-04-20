@@ -14,11 +14,8 @@ class StudyPageWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentItem = ref.watch(readerAndNoteFilterProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const StudyTopBarWidget(),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
+      extendBodyBehindAppBar: true,
+      appBar: const StudyTopBarWidget(),
       body: currentItem.selected.runtimeType == ReaderItem
           ? const BibleReaderWidget()
           : FutureBuilder<List<Notes>?>(

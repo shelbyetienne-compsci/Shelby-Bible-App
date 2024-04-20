@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:se_bible_project/databases/note_db.dart';
+
+class EditNoteWidget extends ConsumerStatefulWidget {
+  final Notes? note;
+
+  const EditNoteWidget({this.note, super.key});
+
+  @override
+  ConsumerState<EditNoteWidget> createState() => _EditNoteWidgetState();
+}
+
+class _EditNoteWidgetState extends ConsumerState<EditNoteWidget> {
+  late Notes currentNote;
+  final title = TextEditingController();
+  final body = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.note != null) {
+      currentNote = widget.note!;
+      title.text = currentNote.title;
+      body.text = currentNote.body;
+    } else {
+      //initialize empty note
+      currentNote = Notes(id: 1, title: title.text, body: body.text);
+      ref.read(notesTableProvider).insert(currentNote);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final notesDB = ref.read(notesTableProvider);
+    return Column(
+      children: [
+        TextField(
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            hintText: 'Title',
+          ),
+          controller: title,
+          maxLines: 1,
+          onChanged: (text) {
+            notesDB.update(
+                Notes(id: currentNote.id, title: text, body: body.text));
+          },
+        ),
+        Expanded(
+          child: TextField(
+            decoration: const InputDecoration(hintText: 'Enter notes...'),
+            controller: body,
+            expands: true,
+            maxLines: null,
+            onChanged: (text) {
+              notesDB.update(
+                  Notes(id: currentNote.id, title: title.text, body: text));
+            },
+          ),
+        )
+      ],
+    );
+  }
+}

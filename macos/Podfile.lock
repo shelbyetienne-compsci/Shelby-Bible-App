@@ -1,0 +1,30 @@
+PODS:
+  - FlutterMacOS (1.0.0)
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - sqflite (0.0.3):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - sqflite (from `Flutter/ephemeral/.symlinks/plugins/sqflite/darwin`)
+
+EXTERNAL SOURCES:
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  shared_preferences_foundation:
+    :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
+  sqflite:
+    :path: Flutter/ephemeral/.symlinks/plugins/sqflite/darwin
+
+SPEC CHECKSUMS:
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
+  shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
+  sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
+
+PODFILE CHECKSUM: 3598b0013492b6ea8ebba7d1fa63720e497af464
+
+COCOAPODS: 1.15.2

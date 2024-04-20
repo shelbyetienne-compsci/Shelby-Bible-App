@@ -19,6 +19,7 @@ dependencies:
   envied: ^0.5.4+1
   sqflite: ^2.3.3
   path: any
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:

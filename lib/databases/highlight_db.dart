@@ -36,37 +36,14 @@ class Highlights {
       };
 }
 
-class HighlightTable implements DatabaseSchema<Highlights> {
-  final Database _db;
-
-  const HighlightTable(this._db);
-
-  @override
-  Future<int> insert(Highlights data) {
-    return _db.insert(
-      _kHighlightsDB,
-      data.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  @override
-  Future<List<Highlights>?> read() async {
-    final maps = await _db.query(_kHighlightsDB);
-    if (maps.isEmpty) return null;
-    return List.generate(
-      maps.length,
-      (index) => Highlights.fromJson(
-        maps[index],
-      ),
-    );
-  }
+class HighlightTable extends DatabaseSchema<Highlights> {
+  HighlightTable(super.db);
 
   @override
   Future<int> delete({
     required String whereArg,
   }) {
-    return _db.delete(
+    return db.delete(
       _kHighlightsDB,
       where: '$_kVerseId = ?',
       whereArgs: [
@@ -77,7 +54,7 @@ class HighlightTable implements DatabaseSchema<Highlights> {
 
   @override
   Future<Highlights?> get({required String whereArg}) async {
-    final maps = await _db.query(
+    final maps = await db.query(
       _kHighlightsDB,
       where: '$_kVerseId = ?',
       whereArgs: [
@@ -89,12 +66,38 @@ class HighlightTable implements DatabaseSchema<Highlights> {
       maps.first,
     );
   }
+
+  @override
+  Future<int> insert(Highlights data) {
+    return db.insert(
+      _kHighlightsDB,
+      data.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  @override
+  Future<List<Highlights>?> read() async {
+    final maps = await db.query(_kHighlightsDB);
+    if (maps.isEmpty) return null;
+    return List.generate(
+      maps.length,
+      (index) => Highlights.fromJson(
+        maps[index],
+      ),
+    );
+  }
+
+  @override
+  Future<int> update(Highlights data) async {
+    return 0;
+  }
 }
 
 final highlightTableProvider = Provider<HighlightTable>(
   (ref) {
     return HighlightTable(
-      ref.read(initialDatabaseProvider),
+      ref.read(databaseProvider),
     );
   },
 );

@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/databases/database.dart';
 import 'package:se_bible_project/routes.dart';
-import 'package:se_bible_project/ui/reader_page_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'databases/highlight_db.dart';
+import 'databases/note_db.dart';
 
 void main(List<String> args) async {
   await runZonedGuarded<Future<void>>(() async {
@@ -14,12 +15,15 @@ void main(List<String> args) async {
     final initializeDB = await DatabaseManager.initDb(
       onCreate: (db, version) async {
         registerHighlightSchema(db);
+        registerNotesSchema(db);
       },
     );
+    final initializePreferences = await SharedPreferences.getInstance();
     runApp(
       ProviderScope(
         overrides: [
-          initialDatabaseProvider.overrideWithValue(initializeDB),
+          databaseProvider.overrideWithValue(initializeDB),
+          preferencesProvider.overrideWithValue(initializePreferences),
         ],
         child: const MyApp(),
       ),
@@ -39,26 +43,5 @@ class MyApp extends StatelessWidget {
       ),
       routerConfig: router,
     );
-  }
-}
-
-class MyHomePage extends ConsumerStatefulWidget {
-  const MyHomePage({
-    super.key,
-  });
-
-  @override
-  ConsumerState<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends ConsumerState<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const BibleReaderPageWidget();
   }
 }

@@ -6,18 +6,20 @@ const String _kNotesDb = 'Notes';
 
 void registerNotesSchema(Database db) async {
   await db.execute(
-      'CREATE TABLE $_kNotesDb (id INTEGER PRIMARY KEY, title TEXT NOT NULL, body TEXT NOT NULL);');
+      'CREATE TABLE $_kNotesDb (id INTEGER PRIMARY KEY, title TEXT NOT NULL, body TEXT NOT NULL, lastUpdated INTEGER NOT NULL);');
 }
 
 class Notes {
   final int? id;
   final String title;
   final String body;
+  final DateTime lastUpdated;
 
   Notes({
     this.id,
     required this.title,
     required this.body,
+    required this.lastUpdated,
   });
 
   factory Notes.fromJson(dynamic json) {
@@ -25,6 +27,8 @@ class Notes {
       id: json['id'] as int,
       title: json['title'] as String,
       body: json['body'] as String,
+      lastUpdated:
+          DateTime.fromMillisecondsSinceEpoch(json['lastUpdated'] as int),
     );
   }
 
@@ -32,7 +36,22 @@ class Notes {
         'id': id,
         'title': title,
         'body': body,
+        'lastUpdated': lastUpdated.millisecondsSinceEpoch,
       };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Notes &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          title == other.title &&
+          body == other.body &&
+          lastUpdated == other.lastUpdated;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^ title.hashCode ^ body.hashCode ^ lastUpdated.hashCode;
 }
 
 class NotesTable extends DatabaseSchema<Notes> {
@@ -76,13 +95,28 @@ class NotesTable extends DatabaseSchema<Notes> {
 
   @override
   Future<List<Notes>?> read() async {
-    final maps = await db.query(_kNotesDb);
+    final maps = await db.query(
+      _kNotesDb,
+      orderBy: 'lastUpdated DESC',
+    );
     if (maps.isEmpty) return null;
     return List.generate(
       maps.length,
       (index) => Notes.fromJson(
         maps[index],
       ),
+    );
+  }
+
+  Future<Notes?> findEmpty() async {
+    final maps = await db.query(
+      _kNotesDb,
+      where: 'title = ? AND body = ?',
+      whereArgs: ['', ''],
+    );
+    if (maps.isEmpty) return null;
+    return Notes.fromJson(
+      maps.first,
     );
   }
 

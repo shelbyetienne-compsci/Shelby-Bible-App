@@ -18,9 +18,20 @@ class AllNotesButtonWidget extends ConsumerWidget {
       onPressed: () {
         showModalBottomSheet(
           context: context,
+          showDragHandle: true,
           builder: (context) {
-            return NotesPageWidget(
-              onPressed: onPressed,
+            return DraggableScrollableSheet(
+              expand: false,
+              minChildSize: 0.48,
+              initialChildSize: 0.48,
+              maxChildSize: 0.72,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return NotesPageWidget(
+                  controller: scrollController,
+                  onPressed: onPressed,
+                );
+              },
             );
           },
         );
@@ -31,9 +42,11 @@ class AllNotesButtonWidget extends ConsumerWidget {
 }
 
 class NotesPageWidget extends ConsumerWidget {
+  final ScrollController controller;
   final Function() onPressed;
 
-  const NotesPageWidget({required this.onPressed, super.key});
+  const NotesPageWidget(
+      {required this.controller, required this.onPressed, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +57,7 @@ class NotesPageWidget extends ConsumerWidget {
           builder:
               (BuildContext context, AsyncSnapshot<List<Notes>?> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text(snapshot.error.toString()));
             } else {
@@ -54,6 +67,7 @@ class NotesPageWidget extends ConsumerWidget {
                 );
               }
               return ListView.builder(
+                controller: controller,
                 itemBuilder: (context, index) {
                   return NotesItemWidget(
                     width: MediaQuery.of(context).size.width,
@@ -91,15 +105,15 @@ class NotesPageWidget extends ConsumerWidget {
                           lastUpdated: DateTime.now(),
                         ),
                       );
-                }else {
+                } else {
                   ref.read(notesTableProvider).insert(
-                    Notes(
-                      id: DateTime.now().millisecondsSinceEpoch,
-                      title: '',
-                      body: '',
-                      lastUpdated: DateTime.now(),
-                    ),
-                  );
+                        Notes(
+                          id: DateTime.now().millisecondsSinceEpoch,
+                          title: '',
+                          body: '',
+                          lastUpdated: DateTime.now(),
+                        ),
+                      );
                 }
                 onPressed.call();
                 if (!context.mounted) return;
@@ -142,13 +156,13 @@ class NotesItemWidget extends ConsumerWidget {
             child: InkWell(
               onTap: () {
                 ref.read(notesTableProvider).update(
-                  Notes(
-                    id: note!.id,
-                    title: note!.title,
-                    body: note!.body,
-                    lastUpdated: DateTime.now(),
-                  ),
-                );
+                      Notes(
+                        id: note!.id,
+                        title: note!.title,
+                        body: note!.body,
+                        lastUpdated: DateTime.now(),
+                      ),
+                    );
                 onPressed.call();
                 context.pop();
               },

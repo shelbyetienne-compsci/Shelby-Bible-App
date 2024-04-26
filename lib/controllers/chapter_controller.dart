@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart' hide State;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:se_bible_project/databases/database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../databases/database.dart';
 import '../helper.dart';
 import '../models/book.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../repository/iq_bible_repository.dart';
 import '../repository/providers.dart';
 
 @immutable
@@ -26,14 +27,14 @@ class ChapterState extends State {
     int? currentChapter,
     int? chapters,
     List<Book>? books,
-  }) {
-    return ChapterState(
+  }) =>
+      ChapterState(
         currentBook: currentBook ?? this.currentBook,
         currentChapter: currentChapter ?? this.currentChapter,
         chapters: chapters ?? this.chapters,
         books: books ?? this.books,
       );
-  }
+
 }
 
 const String _kBook = 'last.book';
@@ -65,7 +66,7 @@ class ChapterStateController extends Controller<ChapterState> {
   }
 
   Future<int?> _fetchChapters(int bookId) async {
-    final bookChapters = ref.read(totalChaptersProvider(bookId)).asData?.value;
+    final bookChapters = ref.read(bibleRepository).getChapterCount(bookId);
     return bookChapters;
   }
 
@@ -75,13 +76,12 @@ class ChapterStateController extends Controller<ChapterState> {
       if (state.currentBook == 0 && state.currentChapter == 1) {
         return;
       } else if (state.currentBook > 0 && state.currentChapter == 1) {
-        final bookChapters =
-            ref.read(totalChaptersProvider(state.currentBook)).asData?.value;
+        final bookChapters = await _fetchChapters(state.currentBook);
         if (!mounted) return;
         state = state.copyWith(
           currentBook: state.currentBook - 1,
           currentChapter: bookChapters,
-          chapters: await _fetchChapters(state.currentBook - 1),
+          chapters: bookChapters,
         );
         _preferences.setInt(_kChapter, state.currentChapter);
         _preferences.setInt(_kBook, state.currentBook);

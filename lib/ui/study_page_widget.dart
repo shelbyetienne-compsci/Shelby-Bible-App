@@ -66,7 +66,7 @@ class _StudyPageWidget extends ConsumerState<StudyPageWidget> {
               builder:
                   (BuildContext context, AsyncSnapshot<List<Notes>?> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text(snapshot.error.toString()));
                 } else {

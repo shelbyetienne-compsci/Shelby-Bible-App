@@ -45,7 +45,7 @@ class BookButtonWidget extends ConsumerWidget {
       child: Text(
         chapterState.books.isEmpty
             ? '--'
-            : chapterState.books[chapterState.currentBook].name,
+            : '${chapterState.books[chapterState.currentBook].name} ${chapterState.currentChapter}',
         style: TextStyle(
           color: isSelected ? Colors.white : Colors.black,
         ),

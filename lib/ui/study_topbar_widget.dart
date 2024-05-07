@@ -36,7 +36,7 @@ class StudyTopBarWidget extends ConsumerWidget {
               ),
             ),
             child: Text(
-              'Note',
+              'Notes',
               style: TextStyle(
                 color: item.id == filters.selected?.id
                     ? Colors.white

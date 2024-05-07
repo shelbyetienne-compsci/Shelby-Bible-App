@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart' hide State;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../databases/database.dart';
 import '../helper.dart';
 import '../models/book.dart';
 
+import '../repository/iq_bible_repository.dart';
 import '../repository/providers.dart';
 
 @immutable
@@ -31,27 +34,39 @@ class ChapterState extends State {
         chapters: chapters ?? this.chapters,
         books: books ?? this.books,
       );
+
 }
+
+const String _kBook = 'last.book';
+const String _kChapter = 'last.chapter';
 
 class ChapterStateController extends Controller<ChapterState> {
   final Ref ref;
   final Testaments testaments;
+  final SharedPreferences _preferences;
 
-  ChapterStateController(this.ref, this.testaments, super.state);
+  ChapterStateController(
+    this.ref,
+    this.testaments,
+    super.state,
+    SharedPreferences preferences,
+  ) : _preferences = preferences;
 
   Future<void> setChapter(int chapter) async {
     if (!mounted) return;
     state = state.copyWith(currentChapter: chapter);
+    _preferences.setInt(_kChapter, chapter);
   }
 
   Future<void> setBook(int book) async {
     if (!mounted) return;
     state = state.copyWith(
         currentBook: book - 1, chapters: await _fetchChapters(book));
+    _preferences.setInt(_kBook, book - 1);
   }
 
   Future<int?> _fetchChapters(int bookId) async {
-    final bookChapters = ref.read(totalChaptersProvider(bookId)).asData?.value;
+    final bookChapters = ref.read(bibleRepository).getChapterCount(bookId);
     return bookChapters;
   }
 
@@ -61,16 +76,17 @@ class ChapterStateController extends Controller<ChapterState> {
       if (state.currentBook == 0 && state.currentChapter == 1) {
         return;
       } else if (state.currentBook > 0 && state.currentChapter == 1) {
-        final bookChapters =
-            ref.read(totalChaptersProvider(state.currentBook)).asData?.value;
+        final bookChapters = await _fetchChapters(state.currentBook);
         if (!mounted) return;
         state = state.copyWith(
           currentBook: state.currentBook - 1,
           currentChapter: bookChapters,
-          chapters: await _fetchChapters(state.currentBook - 1),
+          chapters: bookChapters,
         );
+        _preferences.setInt(_kChapter, state.currentChapter);
+        _preferences.setInt(_kBook, state.currentBook);
       } else {
-        state = state.copyWith(currentChapter: state.currentChapter - 1);
+        setChapter(state.currentChapter - 1);
       }
     } else if (details.velocity.pixelsPerSecond.dx < 0) {
       //Left Swipe
@@ -85,8 +101,10 @@ class ChapterStateController extends Controller<ChapterState> {
           currentChapter: 1,
           chapters: await _fetchChapters(state.currentBook + 1),
         );
+        _preferences.setInt(_kChapter, state.currentChapter);
+        _preferences.setInt(_kBook, state.currentBook);
       } else {
-        state = state.copyWith(currentChapter: state.currentChapter + 1);
+        setChapter(state.currentChapter + 1);
       }
     }
   }
@@ -95,12 +113,15 @@ class ChapterStateController extends Controller<ChapterState> {
 final initialChapterState = Provider.autoDispose<ChapterState>((ref) {
   final books = ref.watch(booksProvider(Testaments.allBooks)).asData?.value;
   if (books != null) {
-    final firstBook = books.first;
+    final pref = ref.read(preferencesProvider);
+    final initBook = pref.getInt(_kBook) ?? 0;
+    final initChapter = pref.getInt(_kChapter) ?? 1;
+
     final initialBookChapters =
-        ref.watch(totalChaptersProvider(firstBook.bookNumber)).asData?.value;
+        ref.read(totalChaptersProvider(initBook)).asData?.value;
     return ChapterState(
-      currentBook: firstBook.bookNumber - 1,
-      currentChapter: 1,
+      currentBook: initBook,
+      currentChapter: initChapter,
       chapters: initialBookChapters ?? 0,
       books: books,
     );
@@ -122,5 +143,6 @@ final chapterStateNotifierProvider = StateNotifierProvider.family
     ref,
     testament,
     initState,
+    ref.read(preferencesProvider),
   );
 });

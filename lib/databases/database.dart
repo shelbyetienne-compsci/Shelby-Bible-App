@@ -1,11 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 abstract class DatabaseSchema<T> {
+  final Database db;
+
+  const DatabaseSchema(this.db);
+
   Future<int> insert(T data);
+
+  Future<int> update(T data);
 
   Future<List<T>?> read();
 
@@ -31,6 +38,10 @@ class DatabaseManager {
   }
 }
 
-final initialDatabaseProvider = Provider<Database>((ref) {
+final databaseProvider = Provider<Database>((ref) {
   throw UnimplementedError('You must override initialDatabaseProvider');
+});
+
+final preferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError('You must override preferencesProvider');
 });

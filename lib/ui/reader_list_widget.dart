@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/verse_action_controller.dart';
+import 'package:se_bible_project/databases/database.dart';
 
 import '../controllers/chapter_controller.dart';
 import '../controllers/selected_verse_controller.dart';
@@ -28,6 +29,8 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
   Color? highlightColor;
   late SelectedVersesNotifier selectedVerses;
   bool isOpen = false;
+  final ScrollController _scrollController = ScrollController();
+  final _kScroll = 'last.scroll';
 
   @override
   void initState() {
@@ -128,8 +131,45 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
       return verseSpan.textSpan ?? const WidgetSpan(child: SizedBox.shrink());
     }).toList();
 
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (_scrollController.hasClients) {
+        final pref = ref.read(preferencesProvider);
+        if (pref.containsKey(_kScroll)) {
+          final list = pref.getStringList(_kScroll);
+          if (list != null) {
+            if (int.parse(list[0]) == chapterState.currentBook &&
+                int.parse(list[1]) == chapterState.currentChapter) {
+              _scrollController.jumpTo(
+                double.parse(list[2]),
+              );
+            } else {
+              pref.remove(_kScroll);
+            }
+          }
+        }
+        _scrollController.position.isScrollingNotifier.addListener(() {
+          if (!_scrollController.position.isScrollingNotifier.value) {
+            pref.setStringList(
+              _kScroll,
+              <String>[
+                chapterState.currentBook.toString(),
+                chapterState.currentChapter.toString(),
+                _scrollController.offset.toString(),
+              ],
+            );
+          }
+        });
+      }
+    });
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      controller: _scrollController,
+      padding: EdgeInsets.only(
+        top: MediaQuery.paddingOf(context).top,
+        left: 16,
+        right: 16,
+        bottom: 8,
+      ),
       child: Text.rich(
         TextSpan(
           text: chapterState.currentBook != -1

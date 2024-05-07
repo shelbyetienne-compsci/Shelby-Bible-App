@@ -75,13 +75,13 @@ class BibleApi {
 
   Future<int> getChapterCount(int bookId) async {
     final response = await _get('/GetChapterCount?bookId=$bookId');
-    return jsonDecode(response.body)['chapterCount'];
+    return jsonDecode(response.body)['chapterCount'] as int;
   }
 
   Future<int> getVerseCount(int bookId, int chapterId) async {
     final response =
         await _get('/GetVerseCount?bookId=$bookId&chapterId=$chapterId');
-    return jsonDecode(response.body)['verseCount'];
+    return jsonDecode(response.body)['verseCount'] as int;
   }
 }
 

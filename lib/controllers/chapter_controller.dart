@@ -113,12 +113,12 @@ class ChapterStateController extends Controller<ChapterState> {
 final initialChapterState = Provider.autoDispose<ChapterState>((ref) {
   final books = ref.watch(booksProvider(Testaments.allBooks)).asData?.value;
   if (books != null) {
-    final pref = ref.watch(preferencesProvider);
+    final pref = ref.read(preferencesProvider);
     final initBook = pref.getInt(_kBook) ?? 0;
     final initChapter = pref.getInt(_kChapter) ?? 1;
 
     final initialBookChapters =
-        ref.watch(totalChaptersProvider(initBook)).asData?.value;
+        ref.read(totalChaptersProvider(initBook)).asData?.value;
     return ChapterState(
       currentBook: initBook,
       currentChapter: initChapter,
@@ -143,6 +143,6 @@ final chapterStateNotifierProvider = StateNotifierProvider.family
     ref,
     testament,
     initState,
-    ref.watch(preferencesProvider),
+    ref.read(preferencesProvider),
   );
 });

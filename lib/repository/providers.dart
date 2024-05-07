@@ -33,7 +33,7 @@ final totalChaptersProvider =
 final currentNote =
     FutureProvider.autoDispose.family<Notes?, Notes?>((ref, note) async {
   if (note == null) {
-    final all = await ref.watch(notesTableProvider).read();
+    final all = await ref.read(notesTableProvider).read();
     return all?.first;
   }
   return note;

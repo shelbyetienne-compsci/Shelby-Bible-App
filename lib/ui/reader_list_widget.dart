@@ -7,16 +7,14 @@ import 'package:se_bible_project/databases/database.dart';
 
 import '../controllers/chapter_controller.dart';
 import '../controllers/selected_verse_controller.dart';
+import '../models/book.dart';
 import '../models/chapter.dart';
 import '../models/verse.dart';
 import '../repository/providers.dart';
 import 'highlight_color_widget.dart';
 
 class BibleReaderListWidget extends ConsumerStatefulWidget {
-  final ChapterState chapterState;
-
   const BibleReaderListWidget({
-    required this.chapterState,
     super.key,
   });
 
@@ -31,6 +29,7 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
   bool isOpen = false;
   final ScrollController _scrollController = ScrollController();
   final _kScroll = 'last.scroll';
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -40,9 +39,12 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
 
   void clearSelected({required bool shouldPop}) {
     selectedVerses.removeAll();
-    setState(() {
-      isOpen = false;
-    });
+    if(mounted){
+      setState(() {
+        isOpen = false;
+      });
+    }
+
     if (shouldPop) {
       Navigator.pop(context);
     }
@@ -62,34 +64,34 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
       Scaffold.of(context)
           .showBottomSheet(
             (context) => DraggableScrollableSheet(
-              expand: false,
-              minChildSize: 0.32,
-              initialChildSize: 0.32,
-              maxChildSize: 0.32,
-              builder: (context, controller) {
-                return Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: TextButton(
-                        onPressed: () {
-                          clearSelected(shouldPop: true);
-                        },
-                        child: const Text('X'),
-                      ),
-                    ),
-                    Flexible(
-                      child: HighlightColorsWidget(
-                        clearSelected: () {
-                          clearSelected(shouldPop: true);
-                        },
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          )
+          expand: false,
+          minChildSize: 0.32,
+          initialChildSize: 0.32,
+          maxChildSize: 0.32,
+          builder: (context, controller) {
+            return Column(
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: TextButton(
+                    onPressed: () {
+                      clearSelected(shouldPop: true);
+                    },
+                    child: const Text('X'),
+                  ),
+                ),
+                Flexible(
+                  child: HighlightColorsWidget(
+                    clearSelected: () {
+                      clearSelected(shouldPop: true);
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      )
           .closed
           .whenComplete(() {
         clearSelected(shouldPop: false);
@@ -99,7 +101,10 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final chapterState = widget.chapterState;
+    final chapterState =
+        ref.watch(chapterStateNotifierProvider(Testaments.allBooks));
+    final chapterController =
+        ref.read(chapterStateNotifierProvider(Testaments.allBooks).notifier);
     final chapter = ref
         .watch(
           chaptersProvider(
@@ -162,26 +167,35 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
       }
     });
 
-    return SingleChildScrollView(
-      controller: _scrollController,
-      padding: EdgeInsets.only(
-        top: MediaQuery.paddingOf(context).top,
-        left: 16,
-        right: 16,
-        bottom: 8,
-      ),
-      child: Text.rich(
-        TextSpan(
-          text: chapterState.currentBook != -1
-              ? '${chapterState.books[chapterState.currentBook].name} ${chapterState.currentChapter}\n'
-              : '',
-          children: verses,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onHorizontalDragEnd: (details) async {
+        if(!isOpen) {
+          await chapterController.swipes(details);
+        }
+      },
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        padding: EdgeInsets.only(
+          top: MediaQuery.paddingOf(context).top,
+          left: 16,
+          right: 16,
+          bottom: 8,
+        ),
+        child: Text.rich(
+          TextSpan(
+            text: chapterState.currentBook != -1
+                ? '${chapterState.books[chapterState.currentBook].name} ${chapterState.currentChapter}\n'
+                : '',
+            children: verses,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
     );
   }
+
+
 }

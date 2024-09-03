@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/page_filter_controller.dart';
@@ -26,10 +25,13 @@ class StudyTopBarWidget extends ConsumerWidget {
         } else {
           return TextButton(
             onPressed: () {
+              if(Navigator.canPop(context)){
+                Navigator.pop(context);
+              }
               controller.selectItem(item);
             },
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
+              backgroundColor: WidgetStateProperty.all(
                 item.id == filters.selected?.id
                     ? Colors.black.withOpacity(0.8)
                     : Colors.white,

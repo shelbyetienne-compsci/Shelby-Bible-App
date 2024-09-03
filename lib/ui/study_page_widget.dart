@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/page_filter_controller.dart';
 import 'package:se_bible_project/ui/edit_note_widget.dart';
 import 'package:se_bible_project/ui/notes_page_widget.dart';
-import 'package:se_bible_project/ui/reader_page_widget.dart';
+import 'package:se_bible_project/ui/reader_list_widget.dart';
 import 'package:se_bible_project/ui/study_topbar_widget.dart';
 
 import '../databases/note_db.dart';
@@ -60,7 +60,7 @@ class _StudyPageWidget extends ConsumerState<StudyPageWidget> {
         ],
       ),
       body: currentItem.selected.runtimeType == ReaderItem
-          ? const BibleReaderWidget()
+          ? const BibleReaderListWidget()
           : FutureBuilder<List<Notes>?>(
               future: ref.watch(notesTableProvider).read(),
               builder:

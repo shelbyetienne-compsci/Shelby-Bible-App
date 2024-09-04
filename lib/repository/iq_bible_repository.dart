@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/api/iq_bible_api.dart';
+import 'package:se_bible_project/models/lexicon.dart';
 
 import '../models/book.dart';
 import '../models/chapter.dart';
@@ -33,6 +34,10 @@ class BibleRepository {
 
   Future<int> getVerseCount(int bookId, int chapterId) async {
     return _api.getVerseCount(bookId, chapterId);
+  }
+
+  Future<List<Lexicon>> getConcordance(String verseId) async {
+    return _api.getConcordance(verseId);
   }
 }
 

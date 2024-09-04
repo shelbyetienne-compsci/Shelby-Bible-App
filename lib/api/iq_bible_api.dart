@@ -9,6 +9,7 @@ import 'package:se_bible_project/env/env.dart';
 import '../models/book.dart';
 import '../models/chapter.dart';
 import '../models/verse.dart';
+import '../models/lexicon.dart';
 
 const _apiKey = Env.key1;
 const _apiHost = 'iq-bible.p.rapidapi.com';
@@ -83,6 +84,18 @@ class BibleApi {
         await _get('/GetVerseCount?bookId=$bookId&chapterId=$chapterId');
     return jsonDecode(response.body)['verseCount'] as int;
   }
+
+  Future<List<Lexicon>> getConcordance(String verseId) async {
+    final response = await _get('/GetOriginalText?verseId=$verseId');
+    final json = jsonDecode(response.body);
+    log(response.body);
+    final lexicons = <Lexicon>[];
+    for (final lexicon in json) {
+      lexicons.add(Lexicon.fromJson(lexicon));
+    }
+    return lexicons;
+  }
+
 }
 
 final bibleApiProvider = Provider((ref) {

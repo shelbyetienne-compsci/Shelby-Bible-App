@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/verse_action_controller.dart';
 import 'package:se_bible_project/databases/database.dart';
+import 'package:se_bible_project/ui/concordance_widget.dart';
 
 import '../controllers/chapter_controller.dart';
 import '../controllers/selected_verse_controller.dart';
@@ -87,6 +88,7 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
                     },
                   ),
                 ),
+                Expanded(child: ConcordanceWidget(verses: selectedVerses.verses.toList()))
               ],
             );
           },

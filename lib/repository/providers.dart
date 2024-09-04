@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:se_bible_project/models/lexicon.dart';
 import '../databases/note_db.dart';
 import '../models/book.dart';
 import '../models/chapter.dart';
@@ -28,6 +29,11 @@ final booksProvider = FutureProvider.autoDispose
 final totalChaptersProvider =
     FutureProvider.autoDispose.family<int, int>((ref, bookNumber) async {
   return ref.read(bibleRepository).getChapterCount(bookNumber);
+});
+
+final concordanceProvider = FutureProvider.autoDispose
+    .family<List<Lexicon>, String>((ref, verseId) async {
+  return ref.read(bibleRepository).getConcordance(verseId);
 });
 
 final currentNote =

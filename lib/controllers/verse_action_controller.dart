@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide State;
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/highlight_controller.dart';
 import 'package:se_bible_project/controllers/selected_verse_controller.dart';
@@ -78,6 +79,9 @@ class VerseActionController extends Controller<VerseActionState> {
   }
 
   void onTapVerse() {
+    if(!state.isSelected) {
+      HapticFeedback.selectionClick();
+    }
     state = state.copyWith(
       isSelected: !state.isSelected,
     );

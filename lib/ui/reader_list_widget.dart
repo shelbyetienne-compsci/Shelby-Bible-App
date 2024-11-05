@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/controllers/verse_action_controller.dart';
 import 'package:se_bible_project/databases/database.dart';
@@ -29,7 +30,6 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
   bool isOpen = false;
   final ScrollController _scrollController = ScrollController();
   final _kScroll = 'last.scroll';
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -95,6 +95,7 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
           .closed
           .whenComplete(() {
         clearSelected(shouldPop: false);
+        HapticFeedback.selectionClick();
       });
     }
   }

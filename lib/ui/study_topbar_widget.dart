@@ -10,6 +10,7 @@ class StudyTopBarWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final filters = ref.watch(readerAndNoteFilterProvider);
     final controller = ref.read(readerAndNoteFilterProvider.notifier);
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: filters.items.map((item) {
@@ -34,14 +35,14 @@ class StudyTopBarWidget extends ConsumerWidget {
               backgroundColor: WidgetStateProperty.all(
                 item.id == filters.selected?.id
                     ? Colors.black.withOpacity(0.8)
-                    : Colors.white,
+                    : bgColor,
               ),
             ),
             child: Text(
               'Notes',
               style: TextStyle(
                 color: item.id == filters.selected?.id
-                    ? Colors.white
+                    ? bgColor
                     : Colors.black,
               ),
             ),

@@ -3,30 +3,32 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/verse.dart';
+
 class SelectedVersesNotifier extends ChangeNotifier {
-  final Set<String> verses = <String>{};
+  final Set<Verse> verses = <Verse>{};
 
   bool get isEmpty => verses.isEmpty;
 
   bool get isNotEmpty => verses.isNotEmpty;
 
-  bool contains(String value) {
+  bool contains(Verse value) {
     return verses.contains(value);
   }
 
-  void addVerse(String value) {
+  void addVerse(Verse value) {
     if (verses.contains(value)) return;
     verses.add(value);
     updateListeners();
   }
 
-  void removeVerse(String value) {
+  void removeVerse(Verse value) {
     verses.remove(value);
     updateListeners();
   }
 
   void removeAll() {
-    if(verses.isEmpty) return;
+    if (verses.isEmpty) return;
     verses.clear();
     updateListeners();
   }

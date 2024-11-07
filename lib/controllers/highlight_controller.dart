@@ -47,7 +47,7 @@ class HighlightController extends Controller<HighlightColor> {
   HighlightController(this.ref, super.state);
 
   void setColor(Color? color) {
-    final selectedVerses = ref.read(selectedVersesNotifier).verses;
+    final selectedVerses = ref.read(selectedVersesNotifier).verses.map((v) => v.id).toSet();
     if (selectedVerses.isNotEmpty) {
       state = state.copyWith(
         color: color,
@@ -58,7 +58,7 @@ class HighlightController extends Controller<HighlightColor> {
   }
 
   void removeColor() {
-    final selectedVerses = ref.read(selectedVersesNotifier).verses;
+    final selectedVerses = ref.read(selectedVersesNotifier).verses.map((v) => v.id).toSet();
     if (selectedVerses.isNotEmpty) {
       state = state.copyWith(
         color: Colors.transparent,

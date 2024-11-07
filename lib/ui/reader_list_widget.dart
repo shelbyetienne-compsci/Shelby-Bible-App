@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,7 +40,7 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
 
   void clearSelected({required bool shouldPop}) {
     selectedVerses.removeAll();
-    if(mounted){
+    if (mounted) {
       setState(() {
         isOpen = false;
       });
@@ -50,48 +51,72 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
     }
   }
 
-  void onVerseTap(Verse verse) {
-    if (selectedVerses.contains(verse.id)) {
-      selectedVerses.removeVerse(verse.id);
+  void onVerseTap(Verse verse, BuildContext context) {
+    if (selectedVerses.contains(verse)) {
+      selectedVerses.removeVerse(verse);
       if (selectedVerses.isEmpty && Navigator.canPop(context)) {
         Navigator.pop(context);
       }
     } else {
-      selectedVerses.addVerse(verse.id);
+      selectedVerses.addVerse(verse);
     }
     if (isOpen == false && selectedVerses.isNotEmpty) {
       isOpen = true;
       Scaffold.of(context)
           .showBottomSheet(
             (context) => DraggableScrollableSheet(
-          expand: false,
-          minChildSize: 0.32,
-          initialChildSize: 0.32,
-          maxChildSize: 0.32,
-          builder: (context, controller) {
-            return Column(
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: TextButton(
-                    onPressed: () {
-                      clearSelected(shouldPop: true);
-                    },
-                    child: const Text('X'),
-                  ),
-                ),
-                Flexible(
-                  child: HighlightColorsWidget(
-                    clearSelected: () {
-                      clearSelected(shouldPop: true);
-                    },
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      )
+              expand: false,
+              minChildSize: 0.32,
+              initialChildSize: 0.32,
+              maxChildSize: 0.32,
+              builder: (context, controller) {
+                return Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                        onPressed: () {
+                          clearSelected(shouldPop: true);
+                        },
+                        child: const Text('X'),
+                      ),
+                    ),
+                    Flexible(
+                      child: HighlightColorsWidget(
+                        clearSelected: () {
+                          clearSelected(shouldPop: true);
+                        },
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: ref.read(
+                              copiedVersesProvider(selectedVerses.verses),
+                            ),
+                          ),
+                        ).whenComplete((){
+                          if (Platform.isIOS) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: const Text(
+                                "Copied",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                              duration: const Duration(seconds: 1, milliseconds: 500),
+                            ));
+                          }
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Copy"),
+                    ),
+                  ],
+                );
+              },
+            ),
+          )
           .closed
           .whenComplete(() {
         clearSelected(shouldPop: false);
@@ -129,7 +154,7 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
           VerseTap(
             verse: verse,
             onTap: () {
-              onVerseTap(verse);
+              onVerseTap(verse, context);
             },
           ),
         ),
@@ -170,7 +195,7 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
 
     return GestureDetector(
       onHorizontalDragEnd: (details) async {
-        if(!isOpen) {
+        if (!isOpen) {
           await chapterController.swipes(details);
         }
       },
@@ -197,6 +222,4 @@ class _BibleReaderListWidgetState extends ConsumerState<BibleReaderListWidget> {
       ),
     );
   }
-
-
 }

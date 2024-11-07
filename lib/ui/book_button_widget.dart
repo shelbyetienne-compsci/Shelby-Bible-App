@@ -18,6 +18,7 @@ class BookButtonWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chapterState =
         ref.watch(chapterStateNotifierProvider(Testaments.allBooks));
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     return TextButton(
       onPressed: selectFilter ??
           () {
@@ -38,8 +39,8 @@ class BookButtonWidget extends ConsumerWidget {
             );
           },
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(
-          isSelected ? Colors.black.withOpacity(0.8) : Colors.white,
+        backgroundColor: WidgetStateProperty.all(
+          isSelected ? Colors.black.withOpacity(0.8) : bgColor,
         ),
       ),
       child: Text(

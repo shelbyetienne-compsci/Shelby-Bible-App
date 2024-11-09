@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -30,8 +31,9 @@ class DatabaseManager {
   static Future<Database> initDb({
     FutureOr<void> Function(Database, int)? onCreate,
   }) async {
+    final dir = await getApplicationDocumentsDirectory();
     return openDatabase(
-      join(await getDatabasesPath(), _dbName),
+      join(dir.path, _dbName),
       onCreate: onCreate,
       version: _version,
     );

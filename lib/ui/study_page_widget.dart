@@ -7,6 +7,7 @@ import 'package:se_bible_project/ui/reader_list_widget.dart';
 import 'package:se_bible_project/ui/study_topbar_widget.dart';
 
 import '../databases/note_db.dart';
+import 'download_button_widget.dart';
 
 class StudyPageWidget extends ConsumerStatefulWidget {
   const StudyPageWidget({super.key});
@@ -54,9 +55,7 @@ class _StudyPageWidget extends ConsumerState<StudyPageWidget> {
               ),
             )
           else
-            const SizedBox(
-              width: 50,
-            )
+            const DownloadButtonWidget()
         ],
       ),
       body: currentItem.selected.runtimeType == ReaderItem

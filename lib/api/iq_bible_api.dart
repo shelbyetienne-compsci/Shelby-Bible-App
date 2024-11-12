@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -29,9 +30,10 @@ class BibleApi {
   }
 
   Future<List<Book>> getBooks() async {
-    final response = await _get('/GetBooks?language=english');
-    final json = jsonDecode(response.body);
+    final jsonString = await rootBundle.loadString("assets/data/all-books.json");
+    final json = jsonDecode(jsonString);
     final books = <Book>[];
+
     for (final book in json) {
       books.add(Book.fromJson(book));
     }
@@ -39,8 +41,8 @@ class BibleApi {
   }
 
   Future<List<Book>> getNTBooks() async {
-    final response = await _get('/GetBooksNT?language=english');
-    final json = jsonDecode(response.body);
+    final jsonString = await rootBundle.loadString("assets/data/nt-books.json");
+    final json = jsonDecode(jsonString);
     final books = <Book>[];
     for (final book in json) {
       books.add(Book.fromJson(book));
@@ -49,8 +51,8 @@ class BibleApi {
   }
 
   Future<List<Book>> getOTBooks() async {
-    final response = await _get('/GetBooksOT?language=english');
-    final json = jsonDecode(response.body);
+    final jsonString = await rootBundle.loadString("assets/data/ot-books.json");
+    final json = jsonDecode(jsonString);
     final books = <Book>[];
     for (final book in json) {
       books.add(Book.fromJson(book));
@@ -74,8 +76,9 @@ class BibleApi {
   }
 
   Future<int> getChapterCount(int bookId) async {
-    final response = await _get('/GetChapterCount?bookId=$bookId');
-    return jsonDecode(response.body)['chapterCount'] as int;
+    final jsonString = await rootBundle.loadString("assets/data/chapter-count.json");
+    final json = jsonDecode(jsonString);
+    return json['$bookId'] as int;
   }
 
   Future<int> getVerseCount(int bookId, int chapterId) async {

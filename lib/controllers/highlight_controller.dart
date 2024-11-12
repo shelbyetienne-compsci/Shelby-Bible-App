@@ -42,7 +42,7 @@ class HighlightColor extends State {
 }
 
 class HighlightController extends Controller<HighlightColor> {
-  AutoDisposeRef ref;
+  Ref ref;
 
   HighlightController(this.ref, super.state);
 

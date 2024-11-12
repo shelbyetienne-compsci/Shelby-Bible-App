@@ -41,4 +41,12 @@ class OfflineDatabaseManager {
       rethrow;
     }
   }
+
+  static Future<void> isDatabaseDownloaded() async {
+    final dir = await getApplicationDocumentsDirectory();  // Persistent location
+    final dbPath = join(dir.path, _dbName);
+    kjvIsDownloaded = await File(dbPath).exists();
+  }
 }
+
+

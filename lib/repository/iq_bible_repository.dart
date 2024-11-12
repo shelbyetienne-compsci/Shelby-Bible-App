@@ -1,15 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:se_bible_project/api/iq_bible_api.dart';
+import 'package:se_bible_project/databases/offline/chapter_db.dart';
 
+import '../databases/offline/download_bible.dart';
 import '../models/book.dart';
 import '../models/chapter.dart';
 
 class BibleRepository {
   final BibleApi _api;
+  final Ref _ref;
 
-  BibleRepository(
-    BibleApi bibleApi,
-  ) : _api = bibleApi;
+  BibleRepository(this._api, this._ref);
 
   Future<List<Book>> getBooks() async {
     return _api.getBooks();
@@ -24,6 +25,12 @@ class BibleRepository {
   }
 
   Future<Chapter> getChapter(int bookId, int chapterId) async {
+    if(OfflineDatabaseManager.kjvIsDownloaded){
+      final chapter = await _ref.watch(chapterTableProvider).asData?.value.get(bookId, chapterId);
+      if (chapter != null) {
+        return chapter;
+      }
+    }
     return _api.getChapter(bookId, chapterId);
   }
 
@@ -38,5 +45,5 @@ class BibleRepository {
 
 final bibleRepository = Provider((ref) {
   final bibleApi = ref.read(bibleApiProvider);
-  return BibleRepository(bibleApi);
+  return BibleRepository(bibleApi, ref);
 });

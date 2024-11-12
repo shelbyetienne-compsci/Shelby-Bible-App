@@ -21,10 +21,17 @@ packages:
     dependency: transitive
     description:
       name: args
+<<<<<<< HEAD
       sha256: d0481093c50b1da8910eb0bb301626d4d8eb7284aa739614d2b394ee09e3ea04
       url: "https://pub.dev"
     source: hosted
     version: "2.7.0"
+=======
+      sha256: bf9f5caeea8d8fe6721a9c358dd8a5c1947b27f1cfaa18b39c301273594919e6
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.0"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   async:
     dependency: transitive
     description:
@@ -213,10 +220,17 @@ packages:
     dependency: transitive
     description:
       name: ffi
+<<<<<<< HEAD
       sha256: "289279317b4b16eb2bb7e271abccd4bf84ec9bdcbe999e278a94b804f5630418"
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+=======
+      sha256: "16ed7b077ef01ad6170a3d0c57caa4a112a38d7a2ed5602e0aca9ca6f3d98da6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.3"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   file:
     dependency: transitive
     description:
@@ -300,10 +314,17 @@ packages:
     dependency: "direct main"
     description:
       name: http
+<<<<<<< HEAD
       sha256: "2c11f3f94c687ee9bad77c171151672986360b2b001d109814ee7140b2cf261b"
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
+=======
+      sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.2"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   http_multi_server:
     dependency: transitive
     description:
@@ -420,10 +441,17 @@ packages:
     dependency: transitive
     description:
       name: mime
+<<<<<<< HEAD
       sha256: "41a20518f0cb1256669420fdba0cd90d21561e560ac240f26ef8322e45bb7ed6"
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+=======
+      sha256: "801fd0b26f14a4a58ccb09d5892c3fbdeff209594300a542492cf13fba9d247a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   package_config:
     dependency: transitive
     description:
@@ -548,26 +576,47 @@ packages:
     dependency: "direct main"
     description:
       name: shared_preferences
+<<<<<<< HEAD
       sha256: "6e8bf70b7fef813df4e9a36f658ac46d107db4b4cfe1048b477d4e453a8159f5"
       url: "https://pub.dev"
     source: hosted
     version: "2.5.3"
+=======
+      sha256: "95f9997ca1fb9799d494d0cb2a780fd7be075818d59f00c43832ed112b158a82"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.3"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   shared_preferences_android:
     dependency: transitive
     description:
       name: shared_preferences_android
+<<<<<<< HEAD
       sha256: "20cbd561f743a342c76c151d6ddb93a9ce6005751e7aa458baad3858bfbfb6ac"
       url: "https://pub.dev"
     source: hosted
     version: "2.4.10"
+=======
+      sha256: "480ba4345773f56acda9abf5f50bd966f581dac5d514e5fc4a18c62976bbba7e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.2"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   shared_preferences_foundation:
     dependency: transitive
     description:
       name: shared_preferences_foundation
+<<<<<<< HEAD
       sha256: "6a52cfcdaeac77cad8c97b539ff688ccfc458c007b4db12be584fbe5c0e49e03"
       url: "https://pub.dev"
     source: hosted
     version: "2.5.4"
+=======
+      sha256: "07e050c7cd39bad516f8d64c455f04508d09df104be326d8c02551590a0d513d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.3"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -588,10 +637,17 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_web
+<<<<<<< HEAD
       sha256: c49bd060261c9a3f0ff445892695d6212ff603ef3115edbb448509d407600019
       url: "https://pub.dev"
     source: hosted
     version: "2.4.3"
+=======
+      sha256: d2ca4132d3946fec2184261726b355836a82c33d7d5b67af32692aff18a4684e
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.2"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   shared_preferences_windows:
     dependency: transitive
     description:
@@ -785,26 +841,55 @@ packages:
     dependency: transitive
     description:
       name: web
+<<<<<<< HEAD
       sha256: "868d88a33d8a87b18ffc05f9f030ba328ffefba92d6c127917a2ba740f9cfe4a"
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+=======
+      sha256: cd3543bd5798f6ad290ea73d210f423502e71900302dde696f8bff84bf89a1cb
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   web_socket:
     dependency: transitive
     description:
       name: web_socket
+<<<<<<< HEAD
       sha256: "34d64019aa8e36bf9842ac014bb5d2f5586ca73df5e4d9bf5c936975cae6982c"
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+=======
+      sha256: "3c12d96c0c9a4eec095246debcea7b86c0324f22df69893d538fcc6f1b8cce83"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.6"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   web_socket_channel:
     dependency: transitive
     description:
       name: web_socket_channel
+<<<<<<< HEAD
       sha256: d645757fb0f4773d602444000a8131ff5d48c9e47adfe9772652dd1a4f2d45c8
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
+=======
+      sha256: "9f187088ed104edd8662ca07af4b124465893caf063ba29758f97af57e61da8f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
+  workmanager:
+    dependency: "direct main"
+    description:
+      name: workmanager
+      sha256: ed13530cccd28c5c9959ad42d657cd0666274ca74c56dea0ca183ddd527d3a00
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.2"
+>>>>>>> 9cd95be (Add offline functionality. Can Download. but download does not stay. Thinking about workmanager.)
   xdg_directories:
     dependency: transitive
     description:

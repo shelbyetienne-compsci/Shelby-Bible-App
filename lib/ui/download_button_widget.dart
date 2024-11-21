@@ -8,15 +8,30 @@ class DownloadButtonWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return OfflineDatabaseManager.kjvIsDownloaded
-        ? const SizedBox(
-            width: 50,
-          )
-        : TextButton(
-            onPressed: () async {
-
-            },
-            child: const Text("Download"),
-          );
+    return StreamBuilder<bool>(
+      stream: OfflineDatabaseManager.isDatabaseDownloaded(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        if (snapshot.hasData) {
+          final fileExists = snapshot.data ?? false;
+          return fileExists
+              ? const SizedBox(
+                  width: 50,
+                )
+              : TextButton(
+                  onPressed: () async {
+                    await OfflineDatabaseManager.downloadDatabase(
+                        'https://github.com/shelbyetienne-compsci/BibleHub/raw/refs/heads/main/bible-kjv.db');
+                  },
+                  child: const Text("Download"),
+                );
+        }
+        return const SizedBox(
+          width: 50,
+        );
+      },
+    );
   }
 }

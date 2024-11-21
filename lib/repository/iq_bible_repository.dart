@@ -25,7 +25,7 @@ class BibleRepository {
   }
 
   Future<Chapter> getChapter(int bookId, int chapterId) async {
-    if(OfflineDatabaseManager.kjvIsDownloaded){
+    if(await OfflineDatabaseManager.isDatabaseDownloaded().first){
       final chapter = await _ref.watch(chapterTableProvider).asData?.value.get(bookId, chapterId);
       if (chapter != null) {
         return chapter;

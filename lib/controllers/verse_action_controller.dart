@@ -47,7 +47,7 @@ class VerseActionState extends State {
 }
 
 class VerseActionController extends Controller<VerseActionState> {
-  AutoDisposeRef ref;
+  Ref ref;
 
   Function() onTap;
 

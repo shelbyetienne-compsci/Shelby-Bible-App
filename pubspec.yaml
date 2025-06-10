@@ -16,7 +16,7 @@ dependencies:
   go_router: ^13.2.4
 
   cupertino_icons: ^1.0.6
-  envied: ^0.5.4+1
+  envied: ^1.1.1
   sqflite: ^2.3.3
   path: any
   shared_preferences: ^2.2.3
@@ -27,8 +27,8 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^2.0.0
-  envied_generator: ^0.5.3
-  build_runner: ^2.4.8
-
+  envied_generator: ^1.1.1
+  build_runner: ^2.4.15
+  
 flutter:
   uses-material-design: true
